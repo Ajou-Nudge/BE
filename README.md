@@ -7,6 +7,7 @@
 | POST   | /issuer/create                             | VC Context 생성                 |
 | POST   | /issuer/issue                              | VC 발행                         |
 | GET    | /issuer/context-list/:issuerId             | Issuer가 생성한 Context 목록    |
+| GET    | /context-list                              | context 목록                    |
 | GET    | /issuer/vc-list/:context                   | 해당 context에 해당하는 VC 목록 |
 | POST   | /holder/submit                             | 해당 vc와 내용을 제출           |
 | GET    | /holder/vc-list/:holderId                  | Holder가 가지고 있는 VC 목록    |
@@ -186,6 +187,7 @@ context는 입력값
 [
   {
     "postId": "0001",
+    "name": "대학원생 모집",
     "verifier": "ajou-graduate-school",
     "requirement": ["graduate-certificate"],
     "expired": "2022-11-21",
