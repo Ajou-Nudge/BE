@@ -53,6 +53,32 @@ context는 입력값
 { "id": "00010001" }
 ```
 
+## Context 목록 확인
+
+### URI
+
+```
+/context-list
+```
+
+### res.body
+
+```json
+[
+  {
+    "context": "graduate-certificate",
+    "credentialSubject": {
+      "title": "1",
+      "name": "1",
+      "date": "1",
+      "major": "1",
+      "doubleMajor": "0",
+      "minor": "0"
+    }
+  }
+]
+```
+
 ## VC발행
 
 ### URI
