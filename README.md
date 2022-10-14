@@ -1,4 +1,6 @@
-# BE
+# DB SCHEMA
+
+![](/doc/img/DB-Schema.png)
 
 # REST API
 
