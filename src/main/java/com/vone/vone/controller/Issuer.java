@@ -1,11 +1,11 @@
 package com.vone.vone.controller;
 
 import com.vone.vone.data.dto.ContextDto;
-import com.vone.vone.data.dto.PostResponseDto;
-import com.vone.vone.data.entity.Context;
-import com.vone.vone.data.entity.VC2Issue;
+import com.vone.vone.data.dto.VC2IssueDto;
+import com.vone.vone.data.entity.HoldersVC;
+import com.vone.vone.data.repository.VCRepository;
 import com.vone.vone.service.ContextService;
-import com.vone.vone.service.PostService;
+import com.vone.vone.service.VCService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,10 +20,12 @@ import java.util.List;
 public class Issuer {
 
     private final ContextService contextService;
+    private final VCService vcService;
 
     @Autowired
-    public Issuer (ContextService contextService) {
+    public Issuer (ContextService contextService, VCService vcService) {
         this.contextService = contextService;
+        this.vcService = vcService;
     }
 
 
@@ -38,10 +40,13 @@ public class Issuer {
 
     @ApiOperation(value = "VC 발행", notes = "새로운 vc를 발행합니다.")
     @PostMapping("/vc")
-    public ArrayList<VC2Issue> issueVC(@RequestBody ArrayList<VC2Issue> postData) {
-        // 1. noSQL에 VC 생성
-        // 2. HolderVCs 테이블에 칼럼 추가
-        return postData;
+    public ResponseEntity<List<Long>> issueVC(@RequestBody ArrayList<VC2IssueDto> vcs) {
+        List<Long> vcIds = new ArrayList<>();
+        for(VC2IssueDto vc : vcs){
+            Long vcId = vcService.issueVC(vc);
+            vcIds.add(vcId);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(vcIds);
     }
 
     @ApiOperation(value = "Context 목록", notes = "현재 존재하는 모든 Context 목록을 출력합니다.")
@@ -59,9 +64,19 @@ public class Issuer {
 //        return issuerId;
 //    }
 
-    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Context인 VC 목록을 반환합니다.")
-    @GetMapping("/vc-list/{context}")
-    public String getIssuedVCList(@PathVariable String context) {
-        return context;
+//    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Context인 VC 목록을 반환합니다.")
+//    @GetMapping("/vc-list/{context}")
+//    public ResponseEntity<List<VC2IssueDto>> getIssuedVCList(@PathVariable String context) {
+//
+//
+//        return context;
+//    }
+
+    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Issuer가 발행한 VC 목록을 반환합니다.")
+    @GetMapping("/vc-list/{issuerId}")
+    public ResponseEntity<List<VC2IssueDto>> getIssuedVCList(@PathVariable String issuerId) {
+        List<VC2IssueDto> vcs = vcService.getVCByIssuerId(issuerId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(vcs);
     }
 }

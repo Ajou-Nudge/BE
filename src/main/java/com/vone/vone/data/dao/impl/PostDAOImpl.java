@@ -42,6 +42,11 @@ public class PostDAOImpl implements PostDAO {
     }
 
     @Override
+    public List<Post> selectAllPostByVerifier(String verifierId){
+        List<Post> posts = postRepository.findByVerifierId(verifierId);
+        return posts;
+    }
+    @Override
     public Post updatePostnTitle(Long number, String title) throws Exception{
         Optional<Post> selectedPost = postRepository.findById(number);
 

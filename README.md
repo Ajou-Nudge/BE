@@ -5,12 +5,12 @@
 # REST API
 
 | Method | URI                                        | Description                     |
-| ------ | ------------------------------------------ | ------------------------------- |
+| ------ |--------------------------------------------| ------------------------------- |
 | POST   | /issuer/create                             | VC Context 생성                 |
 | POST   | /issuer/issue                              | VC 발행                         |
-| GET    | /issuer/context-list/:issuerId             | Issuer가 생성한 Context 목록    |
+| GET    | /issuer/context-list/:issuerId    *        | Issuer가 생성한 Context 목록    |
 | GET    | /context-list                              | context 목록                    |
-| GET    | /issuer/vc-list/:context                   | 해당 context에 해당하는 VC 목록 |
+| GET    | /issuer/vc-list/:context     *             | 해당 context에 해당하는 VC 목록 |
 | POST   | /holder/submit                             | 해당 vc와 내용을 제출           |
 | GET    | /holder/vc-list/:holderId                  | Holder가 가지고 있는 VC 목록    |
 | GET    | /holder/submit-list/:holderId              | 제출한 vc 목록                  |
@@ -264,19 +264,9 @@ context는 입력값
 ```json
 {
   "postId":"0001",
+  "vcIds": 
   [
-    {
-      "context": "graduate-certificate",
-      "issuer": "0001",
-        "credentialSubject": {
-        "title": "아주대학교 졸업증명서",
-        "name": "오동재",
-        "date": "2022-02-10",
-        "major": "소프트웨어학",
-        "doubleMajor": "",
-        "minor": ""
-      }
-    }
+    "asdasd","asdsfa12"
   ]
 }
 ```
@@ -311,10 +301,6 @@ context는 입력값
 ```
 
 # Verifier
-
-| POST | /verifier/post | 채용공고 등록 |
-| GET | /verifier/submit-list | 제출받은 vc 목록 |
-| POST | /verifier/verify/ | 인증서 검증 |
 
 ## 채용공고 등록
 

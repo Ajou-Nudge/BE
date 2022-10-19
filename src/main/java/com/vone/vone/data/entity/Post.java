@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Entity
-@Table( name="post" )
+@Table( name="Post" )
 public class Post {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)

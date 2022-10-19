@@ -1,10 +1,8 @@
-package com.vone.vone.data.entity;
+package com.vone.vone.data.dto;
 
-import com.vone.vone.data.dto.CredentialSubject;
-
-public class VC2Verify {
+public class VCDto {
     private String context;
-    private String issuerId;
+    private String issuer;
     private CredentialSubject credentialSubject;
 
     public String getContext() {
@@ -15,12 +13,12 @@ public class VC2Verify {
         this.context = context;
     }
 
-    public String getIssuerId() {
-        return issuerId;
+    public String getIssuer() {
+        return issuer;
     }
 
-    public void setIssuerId(String issuerId) {
-        this.issuerId = issuerId;
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
     }
 
     public CredentialSubject getCredentialSubject() {
@@ -33,9 +31,9 @@ public class VC2Verify {
 
     @Override
     public String toString() {
-        return "VC2Verfiy{" +
+        return "VC{" +
                 "context='" + context + '\'' +
-                ", issuerId='" + issuerId + '\'' +
+                ", issuer='" + issuer + '\'' +
                 ", credentialSubject=" + credentialSubject +
                 '}';
     }

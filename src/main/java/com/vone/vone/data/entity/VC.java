@@ -2,10 +2,46 @@ package com.vone.vone.data.entity;
 
 import com.vone.vone.data.dto.CredentialSubject;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table( name="VC" )
 public class VC {
+    @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
     private String context;
+    @Column(nullable = false)
     private String issuer;
-    private CredentialSubject credentialSubject;
+    @Column(nullable = false)
+    private String value1;
+    @Column(nullable = true)
+    private String value2;
+    @Column(nullable = true)
+    private String value3;
+    @Column(nullable = true)
+    private String value4;
+    @Column(nullable = true)
+    private String value5;
+    @Column(nullable = true)
+    private String value6;
+    @Column(nullable = true)
+    private String value7;
+    @Column(nullable = true)
+    private String value8;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getContext() {
         return context;
@@ -23,20 +59,101 @@ public class VC {
         this.issuer = issuer;
     }
 
-    public CredentialSubject getCredentialSubject() {
-        return credentialSubject;
+    public String getValue1() {
+        return value1;
     }
 
-    public void setCredentialSubject(CredentialSubject credentialSubject) {
-        this.credentialSubject = credentialSubject;
+    public void setValue1(String value1) {
+        this.value1 = value1;
     }
+
+    public String getValue2() {
+        return value2;
+    }
+
+    public void setValue2(String value2) {
+        this.value2 = value2;
+    }
+
+    public String getValue3() {
+        return value3;
+    }
+
+    public void setValue3(String value3) {
+        this.value3 = value3;
+    }
+
+    public String getValue4() {
+        return value4;
+    }
+
+    public void setValue4(String value4) {
+        this.value4 = value4;
+    }
+
+    public String getValue5() {
+        return value5;
+    }
+
+    public void setValue5(String value5) {
+        this.value5 = value5;
+    }
+
+    public String getValue6() {
+        return value6;
+    }
+
+    public void setValue6(String value6) {
+        this.value6 = value6;
+    }
+
+    public String getValue7() {
+        return value7;
+    }
+
+    public void setValue7(String value7) {
+        this.value7 = value7;
+    }
+
+    public String getValue8() {
+        return value8;
+    }
+
+    public void setValue8(String value8) {
+        this.value8 = value8;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 
     @Override
     public String toString() {
         return "VC{" +
-                "context='" + context + '\'' +
+                "id=" + id +
+                ", context='" + context + '\'' +
                 ", issuer='" + issuer + '\'' +
-                ", credentialSubject=" + credentialSubject +
+                ", value1='" + value1 + '\'' +
+                ", value2='" + value2 + '\'' +
+                ", value3='" + value3 + '\'' +
+                ", value4='" + value4 + '\'' +
+                ", value5='" + value5 + '\'' +
+                ", value6='" + value6 + '\'' +
+                ", value7='" + value7 + '\'' +
+                ", value8='" + value8 + '\'' +
                 '}';
     }
 }

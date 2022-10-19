@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table( name="context" )
+@Table( name="Context" )
 public class Context {
     @Id
     private String context;

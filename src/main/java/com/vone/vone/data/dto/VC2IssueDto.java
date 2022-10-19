@@ -1,8 +1,8 @@
 package com.vone.vone.data.dto;
 
-public class VC2Issue {
+public class VC2IssueDto {
     private String holderId;
-    private VC vc;
+    private VCDto vc;
 
     public String getHolderId() {
         return holderId;
@@ -12,11 +12,11 @@ public class VC2Issue {
         this.holderId = holderId;
     }
 
-    public VC getVc() {
+    public VCDto getVc() {
         return vc;
     }
 
-    public void setVc(VC vc) {
+    public void setVc(VCDto vc) {
         this.vc = vc;
     }
 

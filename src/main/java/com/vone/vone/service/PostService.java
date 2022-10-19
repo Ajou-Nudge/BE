@@ -1,7 +1,6 @@
 package com.vone.vone.service;
 
 import com.vone.vone.data.dto.PostResponseDto;
-import com.vone.vone.data.entity.Post;
 import com.vone.vone.data.entity.PostDto;
 
 import java.util.List;
@@ -11,7 +10,11 @@ public interface PostService {
 
     PostResponseDto savePost(PostDto postDto);
 
-    List<PostResponseDto> getAllPost(String verifierId);
+    List<PostResponseDto> getAllPostByVerifier(String verifierId);
+
+    List<PostResponseDto> getAllPost();
+
+
 
     PostResponseDto changePostTitle(Long number, String title) throws Exception;
 

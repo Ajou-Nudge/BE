@@ -36,12 +36,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostResponseDto> getAllPost(String verifierId){
-        List<Post> posts = postDAO.selectAllPost();
+    public List<PostResponseDto> getAllPostByVerifier(String verifierId){
+        List<Post> posts = postDAO.selectAllPostByVerifier(verifierId);
         List<PostResponseDto> postResponseDtos = new ArrayList<>();
 
         for (Post post : posts) {
-            if(post.getVerifierId().equals(verifierId)) {
                 PostResponseDto postResponseDto = new PostResponseDto();
                 postResponseDto.setId(post.getId());
                 postResponseDto.setVerifierId(post.getVerifierId());
@@ -50,7 +49,26 @@ public class PostServiceImpl implements PostService {
                 postResponseDto.setTitle(post.getTitle());
                 postResponseDto.setUrl(post.getUrl());
                 postResponseDtos.add(postResponseDto);
-            }
+
+        }
+
+        return postResponseDtos;
+    }
+
+    @Override
+    public List<PostResponseDto> getAllPost(){
+        List<Post> posts = postDAO.selectAllPost();
+        List<PostResponseDto> postResponseDtos = new ArrayList<>();
+
+        for (Post post : posts) {
+                PostResponseDto postResponseDto = new PostResponseDto();
+                postResponseDto.setId(post.getId());
+                postResponseDto.setVerifierId(post.getVerifierId());
+                postResponseDto.setExpired(post.getExpired());
+                postResponseDto.setRequired(post.getRequired());
+                postResponseDto.setTitle(post.getTitle());
+                postResponseDto.setUrl(post.getUrl());
+                postResponseDtos.add(postResponseDto);
         }
 
         return postResponseDtos;
@@ -88,6 +106,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Long id) throws Exception{
-
+        
     }
 }

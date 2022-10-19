@@ -12,6 +12,8 @@ public interface PostDAO {
 
     List<Post> selectAllPost();
 
+    List<Post> selectAllPostByVerifier(String verifierId);
+
     Post updatePostnTitle(Long number, String title) throws Exception;
 
     void deletePost(Long number) throws Exception;
