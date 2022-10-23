@@ -1,7 +1,9 @@
 package com.vone.vone.controller;
 
 import com.vone.vone.data.dto.ContextDto;
+import com.vone.vone.data.dto.CredentialSubject;
 import com.vone.vone.data.dto.VC2IssueDto;
+import com.vone.vone.data.dto.VCDto;
 import com.vone.vone.data.entity.HoldersVC;
 import com.vone.vone.data.repository.VCRepository;
 import com.vone.vone.service.ContextService;
@@ -58,25 +60,38 @@ public class Issuer {
         return ResponseEntity.status(HttpStatus.OK).body(contextDtos);
     }
 
-//    @ApiOperation(value = "발행한 Context 목록", notes = "해당 Issuer가 발행한 Context 목록을 반환합니다.")
-//    @GetMapping("/context-list/{issuerId}")
-//    public String getIssuedContextList(@PathVariable String issuerId) {
-//        return issuerId;
-//    }
+    // 이거 고쳐야됨. 지금 그냥 상수값임
+    @ApiOperation(value = "발행한 Context 목록", notes = "해당 Issuer가 발행한 Context 목록을 반환합니다.")
+    @GetMapping("/context-list/{issuerId}")
+    public ResponseEntity<List<String>> getIssuedContextList(@PathVariable String issuerId) {
+        List<String> testResponse = new ArrayList<>();
+        testResponse.add("graduate-certificate");
+        return ResponseEntity.status(HttpStatus.OK).body(testResponse);
+    }
 
-//    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Context인 VC 목록을 반환합니다.")
-//    @GetMapping("/vc-list/{context}")
-//    public ResponseEntity<List<VC2IssueDto>> getIssuedVCList(@PathVariable String context) {
-//
-//
-//        return context;
-//    }
+    // 얘도 고쳐야됨. 얘도 상수값임
+    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Context인 VC 목록을 반환합니다.")
+    @GetMapping("/vc-list/{context}")
+    public ResponseEntity<List<VC2IssueDto>> getIssuedVCListByContext(@PathVariable String context) {
 
-    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Issuer가 발행한 VC 목록을 반환합니다.")
-    @GetMapping("/vc-list/{issuerId}")
-    public ResponseEntity<List<VC2IssueDto>> getIssuedVCList(@PathVariable String issuerId) {
-        List<VC2IssueDto> vcs = vcService.getVCByIssuerId(issuerId);
+        String testHolder = "dongjae712";
+        String testIssuer = "ajouUniv";
+        String testContext = "graduate-certificate";
+        VCDto testVC = new VCDto(testContext,testIssuer,new CredentialSubject("Ajou-univ-graduate-certificate","DONGJAE-OH","2022-02-10","software","","","",""));
+
+        List<VC2IssueDto> vcs = new ArrayList<>();
+        VC2IssueDto vc2Issue = new VC2IssueDto(testHolder,testVC);
+        vcs.add(vc2Issue);
 
         return ResponseEntity.status(HttpStatus.OK).body(vcs);
     }
+
+//    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Issuer가 발행한 VC 목록을 반환합니다.")
+//    @GetMapping("/vc-list/{issuerId}")
+//    public ResponseEntity<List<VC2IssueDto>> getIssuedVCList(@PathVariable String issuerId) {
+//        List<VC2IssueDto> vcs = vcService.getVCByIssuerId(issuerId);
+//
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(vcs);
+//    }
 }
