@@ -8,4 +8,5 @@ public interface ContextService {
     ContextDto saveContext(ContextDto ContextDto);
 
     List<ContextDto> getAllContext();
+
 }

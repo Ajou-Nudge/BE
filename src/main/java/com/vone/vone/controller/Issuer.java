@@ -57,20 +57,17 @@ public class Issuer {
     @Operation(summary = "Context 목록", description = "현재 존재하는 모든 Context 목록을 출력합니다.")
     @GetMapping("/context-list")
     public ResponseEntity<List<ContextDto>> getContextList() {
-        // 1. 모든 context 출력
         List<ContextDto> contextDtos = contextService.getAllContext();
 
         return ResponseEntity.status(HttpStatus.OK).body(contextDtos);
     }
 
-    // 이거 고쳐야됨. 지금 그냥 상수값임
-    @Operation(summary = "발행한 Context 목록", description = "해당 Issuer가 발행한 Context 목록을 반환합니다.")
+    @Operation(summary = "발행한 VC의 Context 목록", description = "해당 Issuer가 발행한 Context 목록을 반환합니다.")
     @GetMapping("/context-list/{issuerId}")
     public ResponseEntity<List<String>> getIssuedContextList(@PathVariable String issuerId) {
+        List <String> contexts = vcService.getVCsContextByIssuerId(issuerId);
 
-        List <String> testResponse = Collections.singletonList("test");
-
-        return ResponseEntity.status(HttpStatus.OK).body(testResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(contexts);
     }
 
     @Operation(summary = "발행한 VC 목록", description = "해당 Context인 VC 목록을 반환합니다.")

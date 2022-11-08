@@ -81,17 +81,11 @@ public class VCServiceImpl implements VCService {
     }
 
     @Override
-    public List<VC2IssueDto> getVCByIssuerId(String issuerId){
+    public List<String> getVCsContextByIssuerId(String issuerId){
         List<HoldersVC> vcs = holdersVCDAO.getHoldersVCByIssuerId(issuerId);
-        List<VC2IssueDto> vcResponses = new ArrayList<>();
+        List<String> vcResponses = new ArrayList<>();
         for(HoldersVC vc : vcs){
-            VC2IssueDto vcResponse = new VC2IssueDto();
-
-            vcResponse.setHolderId(vc.getHolderId());
-            VC tempVc = vcDAO.selectVC(vc.getVcId());
-            vcResponse.setVc(VCToVCDto(tempVc));
-
-            vcResponses.add(vcResponse);
+            vcResponses.add(vc.getContext());
         }
         return vcResponses;
     }

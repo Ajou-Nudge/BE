@@ -10,7 +10,7 @@ import java.util.List;
 public interface VCService {
     Long issueVC(VC2IssueDto vc2IssueDto);
 
-    List<VC2IssueDto> getVCByIssuerId(String issuerId);
+    List<String> getVCsContextByIssuerId(String issuerId);
 
     List<VCDto> getVCByHolderId(String holderId);
 
