@@ -3,6 +3,7 @@ package com.vone.vone.data.dao.impl;
 import com.vone.vone.controller.Holder;
 import com.vone.vone.data.dao.HoldersVCDAO;
 import com.vone.vone.data.dao.VCDAO;
+import com.vone.vone.data.entity.Context;
 import com.vone.vone.data.entity.HoldersVC;
 import com.vone.vone.data.entity.VC;
 import com.vone.vone.data.repository.HoldersVCRepository;
@@ -38,6 +39,12 @@ public class HoldersVCDAOImpl implements HoldersVCDAO {
     @Override
     public List<HoldersVC> getHoldersVCByHolderId(String holderId){
         List<HoldersVC> selected =  holdersVCRepository.findByHolderId(holderId);
+        return selected;
+    }
+
+    @Override
+    public List<HoldersVC> getHoldersVCByContext(String context){
+        List<HoldersVC> selected =  holdersVCRepository.findByContext(context);
         return selected;
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -66,34 +67,17 @@ public class Issuer {
     @Operation(summary = "발행한 Context 목록", description = "해당 Issuer가 발행한 Context 목록을 반환합니다.")
     @GetMapping("/context-list/{issuerId}")
     public ResponseEntity<List<String>> getIssuedContextList(@PathVariable String issuerId) {
-        List<String> testResponse = new ArrayList<>();
-        testResponse.add("graduate-certificate");
+
+        List <String> testResponse = Collections.singletonList("test");
+
         return ResponseEntity.status(HttpStatus.OK).body(testResponse);
     }
 
-    // 얘도 고쳐야됨. 얘도 상수값임
     @Operation(summary = "발행한 VC 목록", description = "해당 Context인 VC 목록을 반환합니다.")
     @GetMapping("/vc-list/{context}")
     public ResponseEntity<List<VC2IssueDto>> getIssuedVCListByContext(@PathVariable String context) {
-
-        String testHolder = "dongjae712";
-        String testIssuer = "ajouUniv";
-        String testContext = "graduate-certificate";
-        VCDto testVC = new VCDto(testContext,testIssuer,new CredentialSubject("Ajou-univ-graduate-certificate","DONGJAE-OH","2022-02-10","software","","","",""));
-
-        List<VC2IssueDto> vcs = new ArrayList<>();
-        VC2IssueDto vc2Issue = new VC2IssueDto(testHolder,testVC);
-        vcs.add(vc2Issue);
+        List<VC2IssueDto> vcs = vcService.getVCByContext(context);
 
         return ResponseEntity.status(HttpStatus.OK).body(vcs);
     }
-
-//    @ApiOperation(value = "발행한 VC 목록", notes = "해당 Issuer가 발행한 VC 목록을 반환합니다.")
-//    @GetMapping("/vc-list/{issuerId}")
-//    public ResponseEntity<List<VC2IssueDto>> getIssuedVCList(@PathVariable String issuerId) {
-//        List<VC2IssueDto> vcs = vcService.getVCByIssuerId(issuerId);
-//
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(vcs);
-//    }
 }

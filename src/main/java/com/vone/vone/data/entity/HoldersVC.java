@@ -16,7 +16,7 @@ public class HoldersVC {
     @Column(nullable = false)
     private String issuerId;
     @Column(nullable = false)
-    private String Context;
+    private String context;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -54,11 +54,11 @@ public class HoldersVC {
     }
 
     public String getContext() {
-        return Context;
+        return context;
     }
 
     public void setContext(String context) {
-        Context = context;
+        this.context = context;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -84,7 +84,7 @@ public class HoldersVC {
                 ", holderId='" + holderId + '\'' +
                 ", vcId=" + vcId +
                 ", issuerId='" + issuerId + '\'' +
-                ", Context='" + Context + '\'' +
+                ", Context='" + context + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
