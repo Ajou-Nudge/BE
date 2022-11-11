@@ -9,9 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 @Builder
-public class User {
+public class UserDto {
     private String name;
     private String email;
     private String password;
-
+    private Long id;
 }

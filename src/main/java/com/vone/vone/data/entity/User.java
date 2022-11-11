@@ -1,8 +1,18 @@
 package com.vone.vone.data.entity;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "User")
 public class User {
+    @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(nullable = false)
     private String password;
 
     public String getName(){
@@ -12,23 +22,22 @@ public class User {
         this.name = name;
     }
 
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
     public String getEmail(){
         return email;
     }
-    public void setEmail(){
-        this.email=email;
-    }
+    public void setEmail(String email){ this.email=email; }
 
     public String getPassword(){
         return password;
     }
-    public void setPassword(){
-        this.password=password;
-    }
+    public void setPassword(String password){ this.password=password; }
 
     @Override
     public String toString(){
-        return "MemberDto{"+
+        return "UserDto{"+
                 "name= '" + name + "\'" +
                 ", email= '" + email + "\'" +
                 "}";

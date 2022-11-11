@@ -1,8 +1,8 @@
 # 조성연 작업 목록
-1. [V] test/FlowChartTest.java 테스트 다 통과하게 만들기.
+1. [x] test/FlowChartTest.java 테스트 다 통과하게 만들기.
    1. Test 3, Test 4는 그냥 더미데이터 반환해서 통과하는 거니까 다시 짜야함.
    2. Test 12는 블록체인 연동해서 Suceess, Failed 중 하나 반환해야하므로 일단 패스. 그냥 status를 Pending에서 Success로 바꾸는 걸로 하면 될 듯
-2. [ ] 로그인/회원가입 구현
+2. [x] 로그인/회원가입 구현
 3. [ ] 로그인/회원가입 구현 후에는 미들웨어 만들어서 verifier, issuer, holder 권한별로 정해진 api만 호출할 수 있도록 하기
 3. [ ] 예외처리해야할 것 굉장히 많음. 플로우차트 잘 보고 생각해서 추가하기.
    1. 예외처리 예시 ) vcId가 2인 vc가 존재하지 않는데 vcId가 2인 인증서를 제출하려하는 경우
