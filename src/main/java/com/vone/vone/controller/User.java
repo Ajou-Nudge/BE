@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class User {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<RegisterDto> signup(@Valid RegisterDto registerDto, BindingResult bindingResult) {
+    public ResponseEntity<RegisterDto> signup(@RequestBody @Valid RegisterDto registerDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.OK).body(registerDto);
         }

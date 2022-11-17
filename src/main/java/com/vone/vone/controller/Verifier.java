@@ -4,6 +4,7 @@ import com.vone.vone.data.dto.PostResponseDto;
 import com.vone.vone.data.dto.SubmittedVCResponseDto;
 import com.vone.vone.data.dto.VC2VerifyDto;
 import com.vone.vone.data.dto.PostDto;
+import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.PostService;
 import com.vone.vone.service.VCService;
 import io.swagger.annotations.ApiOperation;
@@ -24,10 +25,13 @@ public class Verifier {
 
     private final VCService vcService;
 
+    private final KlaytnService klaytnService;
+
     @Autowired
-    public Verifier (PostService postService, VCService vcService) {
+    public Verifier (PostService postService, VCService vcService,KlaytnService klaytnService) {
         this.postService = postService;
         this.vcService = vcService;
+        this.klaytnService = klaytnService;
     }
 
     @Operation(summary = "채용 공고 등록", description = "채용공고를 등록합니다.")
@@ -62,10 +66,22 @@ public class Verifier {
 
     @Operation(summary = "인증서 검증", description = "인증서 내용의 진위여부를 검증합니다.")
     @PostMapping("/verify")
-    public ResponseEntity<String> verify(@RequestBody VC2VerifyDto vc) {
-
+    public ResponseEntity<String> verify(@RequestBody VC2VerifyDto vc){
         // 1. 검증
         return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
+    @GetMapping("/test")
+    public ResponseEntity<String> test() throws Exception {
+        klaytnService.getDocument();
 
+
+        return ResponseEntity.status(HttpStatus.OK).body("Success");
+    }
+
+    @GetMapping("/test2")
+    public ResponseEntity<String> test2() {
+
+
+        return ResponseEntity.status(HttpStatus.OK).body("Success");
+    }
 }
