@@ -1,58 +1,43 @@
 package com.vone.vone.controller;
 
-import javax.validation.Valid;
-
-import com.vone.vone.data.dto.RegisterDto;
-import com.vone.vone.data.dto.UserDto;
+import com.vone.vone.config.security.TokenInfo;
+import com.vone.vone.data.dto.UserJoinDto;
+import com.vone.vone.data.dto.UserLoginRequestDto;
 import com.vone.vone.service.UserService;
-import org.springframework.dao.DataIntegrityViolationException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
-import springfox.documentation.spring.web.json.Json;
-
+@Slf4j
+@RestController
 @RequiredArgsConstructor
-@Controller
 @RequestMapping("/user")
 public class User {
-
     private final UserService userService;
 
-    @GetMapping("/signup")
-    public String signup(RegisterDto registerDto) {
-        return "signup_form";
+    @PostMapping("/login")
+    public TokenInfo login(@RequestBody UserLoginRequestDto userLoginRequestDto) {
+        String memberId = userLoginRequestDto.getMemberId();
+        String password = userLoginRequestDto.getPassword();
+        TokenInfo tokenInfo = userService.login(memberId, password);
+        return tokenInfo;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<RegisterDto> signup(@Valid RegisterDto registerDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.OK).body(registerDto);
-        }
+    @PostMapping("/join")
+    public ResponseEntity<UserJoinDto> join(@RequestBody UserJoinDto userJoinDto) {
+        userService.join(userJoinDto);
 
-        if (!registerDto.getPassword1().equals(registerDto.getPassword2())) {
-            bindingResult.rejectValue("password2", "passwordInCorrect",
-                    "2개의 패스워드가 일치하지 않습니다.");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerDto);
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(userJoinDto);
+    }
 
-        try {
-            userService.create(registerDto.getUsername(), registerDto.getEmail(), registerDto.getPassword1());
-        }catch(DataIntegrityViolationException e) {
-            e.printStackTrace();
-            bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-            return ResponseEntity.status(HttpStatus.OK).body(registerDto);
-        }catch(Exception e) {
-            e.printStackTrace();
-            bindingResult.reject("signupFailed", e.getMessage());
-            return ResponseEntity.status(HttpStatus.OK).body(registerDto);
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(registerDto);
+    @PostMapping("/test")
+    public String test() {
+        return "success";
     }
 }
