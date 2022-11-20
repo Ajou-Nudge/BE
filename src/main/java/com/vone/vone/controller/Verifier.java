@@ -1,9 +1,6 @@
 package com.vone.vone.controller;
 
-import com.vone.vone.data.dto.PostResponseDto;
-import com.vone.vone.data.dto.SubmittedVCResponseDto;
-import com.vone.vone.data.dto.VC2VerifyDto;
-import com.vone.vone.data.dto.PostDto;
+import com.vone.vone.data.dto.*;
 import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.PostService;
 import com.vone.vone.service.VCService;
@@ -15,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -66,22 +64,16 @@ public class Verifier {
 
     @Operation(summary = "인증서 검증", description = "인증서 내용의 진위여부를 검증합니다.")
     @PostMapping("/verify")
-    public ResponseEntity<String> verify(@RequestBody VC2VerifyDto vc){
+    public ResponseEntity<List<String>> verify(@RequestBody VC2VerifyDto vc) throws Exception{
         // 1. 검증
-        return ResponseEntity.status(HttpStatus.OK).body("Success");
-    }
-    @GetMapping("/test")
-    public ResponseEntity<String> test() throws Exception {
-        klaytnService.getDocument();
-
-
-        return ResponseEntity.status(HttpStatus.OK).body("Success");
-    }
-
-    @GetMapping("/test2")
-    public ResponseEntity<String> test2() {
-
-
-        return ResponseEntity.status(HttpStatus.OK).body("Success");
+        List<String> result = new ArrayList<>();
+        for(Long vcId : vc.getVcIds()){
+            if(klaytnService.verify(vcId)){
+                result.add("true");
+                continue;
+            }
+            result.add("false");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

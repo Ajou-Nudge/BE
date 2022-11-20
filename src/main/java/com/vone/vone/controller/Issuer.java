@@ -7,6 +7,7 @@ import com.vone.vone.data.dto.VCDto;
 import com.vone.vone.data.entity.HoldersVC;
 import com.vone.vone.data.repository.VCRepository;
 import com.vone.vone.service.ContextService;
+import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.VCService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,11 +27,12 @@ public class Issuer {
 
     private final ContextService contextService;
     private final VCService vcService;
-
+    private final KlaytnService klaytnService;
     @Autowired
-    public Issuer (ContextService contextService, VCService vcService) {
+    public Issuer (ContextService contextService, VCService vcService,KlaytnService klaytnService) {
         this.contextService = contextService;
         this.vcService = vcService;
+        this.klaytnService = klaytnService;
     }
 
 
@@ -76,5 +78,11 @@ public class Issuer {
         List<VC2IssueDto> vcs = vcService.getVCByContext(context);
 
         return ResponseEntity.status(HttpStatus.OK).body(vcs);
+    }
+
+    @PostMapping("/hash")
+    public ResponseEntity<String> getHash(@RequestBody  CredentialSubject credentialSubject) throws Exception {
+        String res = klaytnService.hash(credentialSubject.getValue1(),credentialSubject.getValue2(),credentialSubject.getValue3(),credentialSubject.getValue4(),credentialSubject.getValue5(),credentialSubject.getValue6(),credentialSubject.getValue7(),credentialSubject.getValue8());
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }

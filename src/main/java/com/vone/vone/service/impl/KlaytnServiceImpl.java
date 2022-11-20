@@ -7,17 +7,23 @@ import com.klaytn.caver.Caver;
 import com.klaytn.caver.abi.datatypes.Type;
 import com.klaytn.caver.contract.Contract;
 
-import com.klaytn.caver.ipfs.IPFS;
+import com.vone.vone.data.dao.HoldersVCDAO;
+import com.vone.vone.data.dao.PostDAO;
+import com.vone.vone.data.dao.SubmittedVCDAO;
+import com.vone.vone.data.dao.VCDAO;
+import com.vone.vone.data.dto.CredentialSubject;
+import com.vone.vone.data.entity.VC;
 import com.vone.vone.service.KlaytnService;
 import io.github.cdimascio.dotenv.Dotenv;
 import okhttp3.Credentials;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.http.HttpService;
 
-
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +38,15 @@ public class KlaytnServiceImpl implements KlaytnService {
     private static String accessKeyId = ""; // e.g. "KASK1LVNO498YT6KJQFUPY8S";
     private static String secretAccessKey = ""; // e.g. "aP/reVYHXqjw3EtQrMuJP4A3/hOb69TjnBT3ePKG";
     private static String chainId = ""; // e.g. "1001" or "8217";
+    private static String contractAddress = "";
+    private final VCDAO vcDAO;
+    private static String salt = "";
+
+    @Autowired
+    public KlaytnServiceImpl(VCDAO vcDAO){
+        this.vcDAO = vcDAO;
+    }
+
     public static String objectToString(Object value) throws JsonProcessingException {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(value);
@@ -39,99 +54,25 @@ public class KlaytnServiceImpl implements KlaytnService {
 
     public static void loadEnv() {
         Dotenv env;
-//        String workingDirectory = System.getProperty("user.dir");
-//        Path workingDirectoryPath = Paths.get(workingDirectory);
-//        String projectRootDirectory = "caver-java-examples";
-//        String currentDirectoryName = workingDirectoryPath.getName(workingDirectoryPath.getNameCount() - 1).toString();
-//        String envDirectory = currentDirectoryName.equals(projectRootDirectory) ?
-//                workingDirectoryPath.toString() :
-//                workingDirectoryPath.getParent().getParent().toString();
-
-        // Read `/path/to/caver-java-examples/.env` file.
         env = Dotenv.configure().directory(".").load();
 
         nodeApiUrl = nodeApiUrl.equals("") ? env.get("NODE_API_URL") : nodeApiUrl;
         accessKeyId = accessKeyId.equals("") ? env.get("ACCESS_KEY_ID") : accessKeyId;
         secretAccessKey = secretAccessKey.equals("") ? env.get("SECRET_ACCESS_KEY") : secretAccessKey;
         chainId = chainId.equals("") ? env.get("CHAIN_ID") : chainId;
+        contractAddress = contractAddress.equals("") ? env.get("CONTRACT_ADDRESS") : contractAddress;
+        salt = salt.equals("") ? env.get("SALT") : salt;
     }
-    @Override
-    public void getDocument() throws Exception {
+    public String getVCFromKlaytn(String didId, Long vcId) throws Exception {
         loadEnv();
         HttpService httpService = new HttpService(nodeApiUrl);
         httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
         httpService.addHeader("x-chain-id", chainId);
-
-        System.out.println("before  caver");
-//        Caver caver = new Caver(httpService);
         Caver caver = new Caver(httpService);
-        //caver.ipfs.setIPFSNode("localhost", 5001, false);
-        System.out.println("make caver");
-
         // abi is extracted by compiling caver-java-examples/resources/KVstore.sol using solc(solidity compiler)
         String abi = "[\n" +
-                "\t{\n" +
+                "{\n" +
                 "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"id\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_type\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"VerifyVC\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"data\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"size\",\n" +
-                "\t\t\t\t\"type\": \"uint256\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"deactivateID\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
                 "\t\t\"inputs\": [\n" +
                 "\t\t\t{\n" +
                 "\t\t\t\t\"name\": \"did\",\n" +
@@ -140,194 +81,19 @@ public class KlaytnServiceImpl implements KlaytnService {
                 "\t\t\t{\n" +
                 "\t\t\t\t\"name\": \"vcId\",\n" +
                 "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_type\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
                 "\t\t\t}\n" +
                 "\t\t],\n" +
-                "\t\t\"name\": \"issueVC\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"singer\",\n" +
-                "\t\t\t\t\"type\": \"bytes\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"verifySignature\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"getContext\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"singer\",\n" +
-                "\t\t\t\t\"type\": \"bytes\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"verifyDIDSignature\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"contexts\",\n" +
-                "\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"removeContext\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"proofPubKey\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"addProof\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"getDocument\",\n" +
+                "\t\t\"name\": \"getVCById\",\n" +
                 "\t\t\"outputs\": [\n" +
                 "\t\t\t{\n" +
                 "\t\t\t\t\"components\": [\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"context\",\n" +
-                "\t\t\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t\t\t},\n" +
                 "\t\t\t\t\t{\n" +
                 "\t\t\t\t\t\t\"name\": \"id\",\n" +
                 "\t\t\t\t\t\t\"type\": \"string\"\n" +
                 "\t\t\t\t\t},\n" +
                 "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"components\": [\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"id\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t\t\t},\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"keyType\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t\t\t},\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"controller\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t\t\t\t\t},\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"pubKeyData\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"bytes\"\n" +
-                "\t\t\t\t\t\t\t},\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"deactivated\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t\t\t\t\t},\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"isPubKey\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t\t\t\t\t},\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"authIndex\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"uint256\"\n" +
-                "\t\t\t\t\t\t\t}\n" +
-                "\t\t\t\t\t\t],\n" +
-                "\t\t\t\t\t\t\"name\": \"authentication\",\n" +
-                "\t\t\t\t\t\t\"type\": \"tuple[]\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"components\": [\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"id\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t\t\t},\n" +
-                "\t\t\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\t\t\"name\": \"value\",\n" +
-                "\t\t\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t\t\t}\n" +
-                "\t\t\t\t\t\t],\n" +
-                "\t\t\t\t\t\t\"name\": \"service\",\n" +
-                "\t\t\t\t\t\t\"type\": \"tuple[]\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"updated\",\n" +
-                "\t\t\t\t\t\t\"type\": \"uint256\"\n" +
+                "\t\t\t\t\t\t\"name\": \"hashed\",\n" +
+                "\t\t\t\t\t\t\"type\": \"string\"\n" +
                 "\t\t\t\t\t}\n" +
                 "\t\t\t\t],\n" +
                 "\t\t\t\t\"name\": \"\",\n" +
@@ -337,391 +103,99 @@ public class KlaytnServiceImpl implements KlaytnService {
                 "\t\t\"payable\": false,\n" +
                 "\t\t\"stateMutability\": \"view\",\n" +
                 "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"serviceId\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"publicKey\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"updateService\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"vcId\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_hash\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"addVC\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
+                "\t}"+
+                "]";
+        // You can get contract address
+        // by running caver-java-examples/contract/deploy scenario.;
+        Contract contract = caver.contract.create(abi, contractAddress);
+        List<Type> callResult = contract.call("getVCById", didId,vcId); //"did:vone:01E5B053B7ba8A91Bdb8FedD5814296c41aD522E"
+        String res = objectToString(callResult.get(0));
+        JSONObject jObject = new JSONObject(res);
+        String response = (jObject.getJSONArray("value")).getJSONObject(1).getString("value");
+        return response;
+    }
+    @Override
+    public boolean verify(Long vcId) throws Exception{
+        VC vc = vcDAO.selectVC(vcId);
+        String didId = "did:vone:"+vc.getIssuer().substring(2);
+
+        String hashOnChain = getVCFromKlaytn(didId, vcId);
+        String hash = hash(vc.getValue1(),vc.getValue2(),vc.getValue3(),vc.getValue4(),vc.getValue5(),vc.getValue6(),vc.getValue7(),vc.getValue8());
+        if(hash.equals(hashOnChain)){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String hash(String _value1,String _value2,String _value3,String _value4,String _value5,String _value6,String _value7,String _value8) throws Exception {
+        loadEnv();
+        HttpService httpService = new HttpService(nodeApiUrl);
+        httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
+        httpService.addHeader("x-chain-id", chainId);
+        Caver caver = new Caver(httpService);
+        // abi is extracted by compiling caver-java-examples/resources/KVstore.sol using solc(solidity compiler)
+        String abi = "[\n" +
+                "{\n" +
                 "\t\t\"constant\": true,\n" +
                 "\t\t\"inputs\": [\n" +
                 "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
+                "\t\t\t\t\"name\": \"_value1\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"_value2\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"_value3\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"_value4\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"_value5\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"_value6\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"_value7\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"_value8\",\n" +
+                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t},\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\t\"name\": \"salt\",\n" +
                 "\t\t\t\t\"type\": \"string\"\n" +
                 "\t\t\t}\n" +
                 "\t\t],\n" +
-                "\t\t\"name\": \"didStatus\",\n" +
+                "\t\t\"name\": \"hash\",\n" +
                 "\t\t\"outputs\": [\n" +
                 "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"deactivated\",\n" +
-                "\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"authListLen\",\n" +
-                "\t\t\t\t\"type\": \"uint256\"\n" +
+                "\t\t\t\t\"name\": \"\",\n" +
+                "\t\t\t\t\"type\": \"bytes32\"\n" +
                 "\t\t\t}\n" +
                 "\t\t],\n" +
                 "\t\t\"payable\": false,\n" +
                 "\t\t\"stateMutability\": \"view\",\n" +
                 "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"getUpdatedTime\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"uint256\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"pubKey\",\n" +
-                "\t\t\t\t\"type\": \"bytes\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"controller\",\n" +
-                "\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"addNewAuthKey\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"contexts\",\n" +
-                "\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"addContext\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"getAllAuthKey\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"components\": [\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"id\",\n" +
-                "\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"keyType\",\n" +
-                "\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"controller\",\n" +
-                "\t\t\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"pubKeyData\",\n" +
-                "\t\t\t\t\t\t\"type\": \"bytes\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"deactivated\",\n" +
-                "\t\t\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"isPubKey\",\n" +
-                "\t\t\t\t\t\t\"type\": \"bool\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"authIndex\",\n" +
-                "\t\t\t\t\t\t\"type\": \"uint256\"\n" +
-                "\t\t\t\t\t}\n" +
-                "\t\t\t\t],\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"tuple[]\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"getProof\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"serviceId\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"removeService\",\n" +
-                "\t\t\"outputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"constant\": true,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"getAllService\",\n" +
-                "\t\t\"outputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"components\": [\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"id\",\n" +
-                "\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t},\n" +
-                "\t\t\t\t\t{\n" +
-                "\t\t\t\t\t\t\"name\": \"value\",\n" +
-                "\t\t\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t\t\t}\n" +
-                "\t\t\t\t],\n" +
-                "\t\t\t\t\"name\": \"\",\n" +
-                "\t\t\t\t\"type\": \"tuple[]\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
-                "\t\t\"type\": \"function\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"inputs\": [],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"nonpayable\",\n" +
-                "\t\t\"type\": \"constructor\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"anonymous\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"Deactivate\",\n" +
-                "\t\t\"type\": \"event\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"anonymous\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"pubKey\",\n" +
-                "\t\t\t\t\"type\": \"bytes\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"controller\",\n" +
-                "\t\t\t\t\"type\": \"string[]\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"AddNewAuthKey\",\n" +
-                "\t\t\"type\": \"event\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"anonymous\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"context\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"AddContext\",\n" +
-                "\t\t\"type\": \"event\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"anonymous\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"context\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"RemoveContext\",\n" +
-                "\t\t\"type\": \"event\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"anonymous\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"serviceId\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"value\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"AddService\",\n" +
-                "\t\t\"type\": \"event\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"anonymous\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"serviceId\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"value\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"UpdateService\",\n" +
-                "\t\t\"type\": \"event\"\n" +
-                "\t},\n" +
-                "\t{\n" +
-                "\t\t\"anonymous\": false,\n" +
-                "\t\t\"inputs\": [\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"did\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"indexed\": false,\n" +
-                "\t\t\t\t\"name\": \"value\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t}\n" +
-                "\t\t],\n" +
-                "\t\t\"name\": \"RemoveService\",\n" +
-                "\t\t\"type\": \"event\"\n" +
-                "\t}\n" +
+                "\t}"+
                 "]";
         // You can get contract address
         // by running caver-java-examples/contract/deploy scenario.
-        System.out.println("first\n");
-        String contractAddress = "0x56dc61531a480C9647a7A525d7D2C0930A50BCBe";
         Contract contract = caver.contract.create(abi, contractAddress);
-        System.out.println("here\n");
-        List<Type> callResult = contract.call("getDocument", "did:klay:01E5B053B7ba8A91Bdb8FedD5814296c41aD522E");
-        System.out.println("Result of calling get function with key:");
-        System.out.println(objectToString(callResult));    }
+        List<Type> callResult = contract.call("hash",_value1, _value2,_value3,_value4,_value5,_value6,_value7,_value8, salt);
+        String res = objectToString(callResult.get(0));
+        JSONObject jObject = new JSONObject(res);
+        String result = jObject.getString("value");
+
+        return result;
+    }
 }
