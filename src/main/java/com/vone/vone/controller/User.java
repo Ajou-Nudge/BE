@@ -3,16 +3,14 @@ package com.vone.vone.controller;
 import com.vone.vone.config.security.TokenInfo;
 import com.vone.vone.data.dto.UserJoinDto;
 import com.vone.vone.data.dto.UserLoginRequestDto;
+import com.vone.vone.data.entity.Member;
 import com.vone.vone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -36,8 +34,8 @@ public class User {
         return ResponseEntity.status(HttpStatus.OK).body(userJoinDto);
     }
 
-    @PostMapping("/test")
-    public String test() {
-        return "success";
+    @GetMapping("/info")
+    public String info() {
+        return userService.info();
     }
 }

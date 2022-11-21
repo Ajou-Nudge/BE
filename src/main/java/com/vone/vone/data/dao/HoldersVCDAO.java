@@ -14,4 +14,6 @@ public interface HoldersVCDAO {
     List<HoldersVC> getHoldersVCByHolderId(String holderId);
 
     List<HoldersVC> getHoldersVCByContext(String context);
+
+    List<HoldersVC> getAllVC();
 }

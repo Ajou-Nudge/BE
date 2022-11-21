@@ -66,16 +66,17 @@ public class Issuer {
 
     @Operation(summary = "발행한 VC의 Context 목록", description = "해당 Issuer가 발행한 Context 목록을 반환합니다.")
     @GetMapping("/context-list/{issuerId}")
-    public ResponseEntity<List<String>> getIssuedContextList(@PathVariable String issuerId) {
+    public ResponseEntity<List<ContextDto>> getIssuedContextList(@PathVariable String issuerId) {
         List <String> contexts = vcService.getVCsContextByIssuerId(issuerId);
+        List <ContextDto> contextsDtos = contextService.getVCsContext(contexts);
 
-        return ResponseEntity.status(HttpStatus.OK).body(contexts);
+        return ResponseEntity.status(HttpStatus.OK).body(contextsDtos);
     }
 
     @Operation(summary = "발행한 VC 목록", description = "해당 Context인 VC 목록을 반환합니다.")
-    @GetMapping("/vc-list/{context}")
-    public ResponseEntity<List<VC2IssueDto>> getIssuedVCListByContext(@PathVariable String context) {
-        List<VC2IssueDto> vcs = vcService.getVCByContext(context);
+    @GetMapping("/vc-list")
+    public ResponseEntity<List<VC2IssueDto>> getIssuedVCListByContext() {
+        List<VC2IssueDto> vcs = vcService.getAllVC();
 
         return ResponseEntity.status(HttpStatus.OK).body(vcs);
     }

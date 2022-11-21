@@ -55,4 +55,18 @@ public class ContextServiceImpl implements ContextService {
 
         return contextDto;
     }
+
+    @Override
+    public List<ContextDto> getVCsContext(List<String> contexts) {
+        List<ContextDto> contextDtos = new ArrayList<>();
+
+        for (String contextName : contexts) {
+            Context context = contextDAO.selectContext(contextName);
+            CredentialSubject credentialSubject = new CredentialSubject(context.getValue1(),context.getValue2(),context.getValue3(),context.getValue4(),context.getValue5(),context.getValue6(),context.getValue7(),context.getValue8());
+            ContextDto contextDto = new ContextDto(contextName,credentialSubject);
+
+            contextDtos.add(contextDto);
+        }
+        return contextDtos;
+    }
 }

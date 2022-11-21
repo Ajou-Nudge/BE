@@ -40,7 +40,11 @@ public class UserService {
         Member member = new Member();
         member.setMemberId(userJoinDto.getMemberId());
         member.setPassword(userJoinDto.getPassword());
-        member.setStatus(userJoinDto.getStatus());
         return memberDAO.join(member);
+    }
+
+    @Transactional
+    public String info() {
+        return memberDAO.info();
     }
 }

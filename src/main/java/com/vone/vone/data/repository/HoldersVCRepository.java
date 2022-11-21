@@ -14,5 +14,4 @@ public interface HoldersVCRepository extends JpaRepository<HoldersVC,Long> {
     List<HoldersVC> findByHolderId(String holderId);
 
     List<HoldersVC> findByContext(String context);
-
 }

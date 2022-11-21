@@ -1,9 +1,8 @@
 package com.vone.vone.service;
 
-import com.vone.vone.data.dto.SubmittedVCResponseDto;
-import com.vone.vone.data.dto.VC2IssueDto;
-import com.vone.vone.data.dto.VC2VerifyDto;
-import com.vone.vone.data.dto.VCDto;
+import com.vone.vone.data.dto.*;
+import com.vone.vone.data.entity.Context;
+import com.vone.vone.data.entity.HoldersVC;
 
 import java.util.List;
 
@@ -17,6 +16,8 @@ public interface VCService {
     boolean submitVC(VC2VerifyDto vc2VerifyDto);
 
     List<VC2IssueDto> getVCByContext(String context);
+
+    List<VC2IssueDto> getAllVC();
 
     List<SubmittedVCResponseDto> getSubmittedVCByHolder (String holderId);
 

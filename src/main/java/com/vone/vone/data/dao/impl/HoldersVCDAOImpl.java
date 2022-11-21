@@ -47,4 +47,10 @@ public class HoldersVCDAOImpl implements HoldersVCDAO {
         List<HoldersVC> selected =  holdersVCRepository.findByContext(context);
         return selected;
     }
+
+    @Override
+    public List<HoldersVC> getAllVC(){
+        List<HoldersVC> selected =  holdersVCRepository.findAll();
+        return selected;
+    }
 }

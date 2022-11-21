@@ -5,10 +5,7 @@ import com.vone.vone.data.dao.PostDAO;
 import com.vone.vone.data.dao.SubmittedVCDAO;
 import com.vone.vone.data.dao.VCDAO;
 import com.vone.vone.data.dto.*;
-import com.vone.vone.data.entity.HoldersVC;
-import com.vone.vone.data.entity.Post;
-import com.vone.vone.data.entity.SubmittedVC;
-import com.vone.vone.data.entity.VC;
+import com.vone.vone.data.entity.*;
 import com.vone.vone.service.VCService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -181,4 +178,19 @@ public class VCServiceImpl implements VCService {
         return submittedVCResponseDtos;
     }
 
+    @Override
+    public List<VC2IssueDto> getAllVC() {
+        List<HoldersVC> vcs = holdersVCDAO.getAllVC();
+        List<VC2IssueDto> vcResponses = new ArrayList<>();
+        for(HoldersVC vc : vcs){
+            VC2IssueDto vcResponse = new VC2IssueDto();
+
+            vcResponse.setHolderId(vc.getHolderId());
+            VC tempVc = vcDAO.selectVC(vc.getVcId());
+            vcResponse.setVc(VCToVCDto(tempVc));
+
+            vcResponses.add(vcResponse);
+        }
+        return vcResponses;
+    }
 }

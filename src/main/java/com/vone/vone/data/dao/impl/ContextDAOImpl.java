@@ -31,4 +31,10 @@ public class ContextDAOImpl implements ContextDAO {
         List<Context> contexts = contextRepository.findAll();
         return contexts;
     }
+
+    @Override
+    public Context selectContext(String contextName) {
+        Context context = contextRepository.findByContext(contextName);
+        return context;
+    }
 }

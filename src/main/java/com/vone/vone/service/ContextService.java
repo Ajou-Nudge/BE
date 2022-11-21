@@ -9,4 +9,5 @@ public interface ContextService {
 
     List<ContextDto> getAllContext();
 
+    List<ContextDto> getVCsContext(List<String> contexts);
 }

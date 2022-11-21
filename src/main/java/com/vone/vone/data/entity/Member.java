@@ -28,9 +28,6 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String status;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
@@ -79,10 +76,6 @@ public class Member implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
 }
