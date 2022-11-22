@@ -2,6 +2,8 @@ package com.vone.vone.data.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -17,7 +19,7 @@ public class PostResponseDto {
 
     private String expired;
 
-    private String required;
+    private List<String> required;
 
     private String url;
 

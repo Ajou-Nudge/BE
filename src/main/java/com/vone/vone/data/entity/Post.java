@@ -1,8 +1,11 @@
 package com.vone.vone.data.entity;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table( name="Post" )
@@ -14,8 +17,9 @@ public class Post {
     private String title;
     @Column(nullable = false)
     private String expired;
-    @Column(nullable = false)
-    private String required;
+    @ElementCollection
+    @Builder.Default
+    private List<String> required = new ArrayList<>();
     @Column(nullable = false)
     private String url;
     @Column(nullable = false)
@@ -40,11 +44,11 @@ public class Post {
         this.expired = expired;
     }
 
-    public String getRequired() {
+    public List<String> getRequired() {
         return required;
     }
 
-    public void setRequired(String required) {
+    public void setRequired(List<String> required) {
         this.required = required;
     }
 

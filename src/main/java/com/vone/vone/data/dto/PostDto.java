@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -16,7 +18,7 @@ public class PostDto {
 
     private String expired;
 
-    private String required;
+    private List<String> required;
 
     private String url;
 
