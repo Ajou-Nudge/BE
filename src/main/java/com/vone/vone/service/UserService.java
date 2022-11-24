@@ -40,6 +40,7 @@ public class UserService {
         Member member = new Member();
         member.setMemberId(userJoinDto.getMemberId());
         member.setPassword(userJoinDto.getPassword());
+        member.getRoles().add(userJoinDto.getRole());
         return memberDAO.join(member);
     }
 

@@ -8,5 +8,5 @@ import java.util.List;
 public class UserJoinDto {
     private String memberId;
     private String password;
-    private String status;
+    private String role;
 }
