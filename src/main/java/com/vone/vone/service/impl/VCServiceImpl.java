@@ -6,6 +6,7 @@ import com.vone.vone.data.dao.SubmittedVCDAO;
 import com.vone.vone.data.dao.VCDAO;
 import com.vone.vone.data.dto.*;
 import com.vone.vone.data.entity.*;
+import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.VCService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,16 +24,19 @@ public class VCServiceImpl implements VCService {
 
     private final SubmittedVCDAO submittedVCDAO;
 
+    private final KlaytnService klaytnService;
+
     @Autowired
-    public VCServiceImpl(VCDAO vcDAO, HoldersVCDAO holdersVCDAO, SubmittedVCDAO submittedVCDAO, PostDAO postDAO){
+    public VCServiceImpl(VCDAO vcDAO, HoldersVCDAO holdersVCDAO, SubmittedVCDAO submittedVCDAO, PostDAO postDAO, KlaytnService klaytnService){
         this.vcDAO = vcDAO;
         this.holdersVCDAO = holdersVCDAO;
         this.submittedVCDAO=submittedVCDAO;
         this.postDAO = postDAO;
+        this.klaytnService = klaytnService;
     }
 
     @Override
-    public Long issueVC(VC2IssueDto vc2IssueDto){
+    public VC2ResponseDto issueVC(VC2IssueDto vc2IssueDto) throws Exception{
         VC vc = new VC();
         vc.setContext(vc2IssueDto.getVc().getContext());
         vc.setIssuer(vc2IssueDto.getVc().getIssuer());
@@ -58,7 +62,11 @@ public class VCServiceImpl implements VCService {
         holdersVC.setUpdatedAt(LocalDateTime.now());
         holdersVCDAO.insertHoldersVC(holdersVC);
 
-        return savedVC.getId();
+        String res = klaytnService.hash(vc2IssueDto.getVc().getCredentialSubject().getValue1(), vc2IssueDto.getVc().getCredentialSubject().getValue2(), vc2IssueDto.getVc().getCredentialSubject().getValue3(), vc2IssueDto.getVc().getCredentialSubject().getValue4(), vc2IssueDto.getVc().getCredentialSubject().getValue5(), vc2IssueDto.getVc().getCredentialSubject().getValue6(), vc2IssueDto.getVc().getCredentialSubject().getValue7(), vc2IssueDto.getVc().getCredentialSubject().getValue8());
+        VC2ResponseDto vc2ResponseDto = new VC2ResponseDto();
+        vc2ResponseDto.setVcIds(vc.getId());
+        vc2ResponseDto.setHash(res);
+        return vc2ResponseDto;
     }
 
     @Override

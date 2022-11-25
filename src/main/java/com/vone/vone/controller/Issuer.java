@@ -1,9 +1,6 @@
 package com.vone.vone.controller;
 
-import com.vone.vone.data.dto.ContextDto;
-import com.vone.vone.data.dto.CredentialSubject;
-import com.vone.vone.data.dto.VC2IssueDto;
-import com.vone.vone.data.dto.VCDto;
+import com.vone.vone.data.dto.*;
 import com.vone.vone.data.entity.HoldersVC;
 import com.vone.vone.data.repository.VCRepository;
 import com.vone.vone.service.ContextService;
@@ -47,13 +44,13 @@ public class Issuer {
 
     @Operation(summary = "VC 발행", description = "새로운 vc를 발행합니다.")
     @PostMapping("/vc")
-    public ResponseEntity<List<Long>> issueVC(@RequestBody ArrayList<VC2IssueDto> vcs) {
-        List<Long> vcIds = new ArrayList<>();
+    public ResponseEntity<List<VC2ResponseDto>> issueVC(@RequestBody ArrayList<VC2IssueDto> vcs) throws Exception {
+        List<VC2ResponseDto> vc2ResponseDtos = new ArrayList<>();
         for(VC2IssueDto vc : vcs){
-            Long vcId = vcService.issueVC(vc);
-            vcIds.add(vcId);
+            VC2ResponseDto hash = vcService.issueVC(vc);
+            vc2ResponseDtos.add(hash);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(vcIds);
+        return ResponseEntity.status(HttpStatus.OK).body(vc2ResponseDtos);
     }
 
     @Operation(summary = "Context 목록", description = "현재 존재하는 모든 Context 목록을 출력합니다.")

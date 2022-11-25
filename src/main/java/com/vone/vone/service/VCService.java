@@ -7,7 +7,7 @@ import com.vone.vone.data.entity.HoldersVC;
 import java.util.List;
 
 public interface VCService {
-    Long issueVC(VC2IssueDto vc2IssueDto);
+    VC2ResponseDto issueVC(VC2IssueDto vc2IssueDto) throws Exception;
 
     List<String> getVCsContextByIssuerId(String issuerId);
 
