@@ -64,11 +64,11 @@ public class Verifier {
 
     @Operation(summary = "인증서 검증", description = "인증서 내용의 진위여부를 검증합니다.")
     @PostMapping("/verify")
-    public ResponseEntity<List<String>> verify(@RequestBody VC2VerifyDto vc) throws Exception{
+    public ResponseEntity<List<String>> verify(@RequestBody VC2VerifyDto vc2VerifyDto) throws Exception {
         // 1. 검증
         List<String> result = new ArrayList<>();
-        for(Long vcId : vc.getVcIds()){
-            if(klaytnService.verify(vcId)){
+        for (Long vcId : vc2VerifyDto.getVcIds()) {
+            if (klaytnService.verify(vcId)) {
                 result.add("true");
                 continue;
             }

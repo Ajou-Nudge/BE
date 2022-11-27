@@ -131,7 +131,7 @@ public class VCServiceImpl implements VCService {
             SubmittedVC submittedVC = new SubmittedVC();
             submittedVC.setVerifierId(verifierId);
             submittedVC.setPostId(vc2VerifyDto.getPostId());
-            submittedVC.setVcId((tempVC.getId()));
+            submittedVC.getVcIds().add(tempVC.getId());
             submittedVC.setHolderId(vc2VerifyDto.getHolder());
             submittedVC.setIssuerId(tempVC.getIssuer());
             submittedVC.setStatus("pending");
@@ -157,8 +157,8 @@ public class VCServiceImpl implements VCService {
             submittedVCResponseDto.setStatus(vc.getStatus());
             submittedVCResponseDto.setTitle(post.getTitle());
             submittedVCResponseDto.setVerifier(vc.getVerifierId());
-            submittedVCResponseDto.setVcId(vc.getVcId());
             submittedVCResponseDto.setPostId(vc.getPostId());
+            submittedVCResponseDto.setVcIds(vc.getVcIds());
 
             submittedVCResponseDtos.add(submittedVCResponseDto);
         }
@@ -177,7 +177,7 @@ public class VCServiceImpl implements VCService {
             submittedVCResponseDto.setStatus(vc.getStatus());
             submittedVCResponseDto.setTitle(post.getTitle());
             submittedVCResponseDto.setVerifier(vc.getVerifierId());
-            submittedVCResponseDto.setVcId(vc.getVcId());
+            submittedVCResponseDto.setVcIds(vc.getVcIds());
             submittedVCResponseDto.setPostId(vc.getPostId());
 
             submittedVCResponseDtos.add(submittedVCResponseDto);

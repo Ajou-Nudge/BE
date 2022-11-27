@@ -14,5 +14,4 @@ public class VC2VerifyDto {
     private Long postId;
     private String holder;
     private List<Long> vcIds;
-
 }

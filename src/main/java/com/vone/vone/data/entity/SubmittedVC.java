@@ -1,7 +1,11 @@
 package com.vone.vone.data.entity;
 
+import lombok.Builder;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table( name="SubmittedVC" )
@@ -12,8 +16,9 @@ public class SubmittedVC {
 
     @Column(nullable = false)
     private Long postId;
-    @Column(nullable = false)
-    private Long vcId;
+    @ElementCollection
+    @Builder.Default
+    private List<Long> vcIds = new ArrayList<>();
     @Column(nullable = false)
     private String holderId;
     @Column(nullable = false)
@@ -43,12 +48,12 @@ public class SubmittedVC {
         this.id = id;
     }
 
-    public Long getVcId() {
-        return vcId;
+    public List<Long> getVcIds() {
+        return vcIds;
     }
 
-    public void setVcId(Long vcId) {
-        this.vcId = vcId;
+    public void setVcIds(List<Long> vcIds) {
+        this.vcIds = vcIds;
     }
 
     public String getHolderId() {
@@ -103,7 +108,7 @@ public class SubmittedVC {
     public String toString() {
         return "SubmittedVCs{" +
                 "id=" + id +
-                ", vcId=" + vcId +
+                ", vcId=" + vcIds +
                 ", holderId='" + holderId + '\'' +
                 ", IssuerId='" + IssuerId + '\'' +
                 ", verifierId='" + verifierId + '\'' +
