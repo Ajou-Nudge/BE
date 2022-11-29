@@ -1,5 +1,6 @@
 package com.vone.vone.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vone.vone.data.dto.*;
 import com.vone.vone.data.entity.VC;
 import com.vone.vone.service.PostService;
@@ -28,11 +29,14 @@ public class Holder {
     private final PostService postService;
     private final VCService vcService;
     private final StorageService storageService;
+
+    private final ObjectMapper objectMapper;
     @Autowired
-    public Holder (PostService postService, VCService vcService, StorageService storageService) {
+    public Holder (PostService postService, VCService vcService, StorageService storageService, ObjectMapper objectMapper) {
         this.postService = postService;
         this.vcService = vcService;
         this.storageService=storageService;
+        this.objectMapper = objectMapper;
     }
     @ApiOperation(value = "채용 공고 목록", notes = "Verifier가 등록한 채용공고 목록을 확인합니다.")
     @GetMapping("/post-list")
@@ -64,14 +68,12 @@ public class Holder {
 
     @ApiOperation(value = "인증서 셀프 등록", notes = "인증서를 등록합니다.")
     @PostMapping("/self-issue-vc")
-    public ResponseEntity<Long> handleFileUpload(@RequestParam("file") MultipartFile file,
-                                                 RedirectAttributes redirectAttributes, @RequestBody VCForSelfIssueDto vcForSelfIssueDto) {
-
-        Long id = storageService.store(file, vcForSelfIssueDto);
-        redirectAttributes.addFlashAttribute("message",
-                "You successfully uploaded " + file.getOriginalFilename() + "!");
-
-        return ResponseEntity.status(HttpStatus.OK).body(id);
+    public ResponseEntity<VC2ResponseDto> handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("data") String data) throws Exception{
+        VC2IssueDto vcForSelfIssueDto = null;
+        vcForSelfIssueDto = objectMapper.readValue(data,VC2IssueDto.class);
+        System.out.println(vcForSelfIssueDto);
+        VC2ResponseDto res = storageService.store(file, vcForSelfIssueDto);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
     @ApiOperation(value = "셀프등록한 인증서 다운", notes = "구현예정")
     @GetMapping("/self-issue-vc/files/{filename:.+}")

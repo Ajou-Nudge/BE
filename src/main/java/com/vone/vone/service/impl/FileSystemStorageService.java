@@ -1,9 +1,11 @@
 package com.vone.vone.service.impl;
 
-import com.vone.vone.data.dao.SelfIssuedDAO;
-import com.vone.vone.data.dto.VCForSelfIssueDto;
-import com.vone.vone.data.entity.SelfIssued;
+import com.vone.vone.data.dao.VCDAO;
+import com.vone.vone.data.dto.VC2IssueDto;
+import com.vone.vone.data.dto.VC2ResponseDto;
+import com.vone.vone.data.entity.VC;
 import com.vone.vone.service.StorageService;
+import com.vone.vone.service.VCService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -25,16 +27,16 @@ import java.util.stream.Stream;
 public class FileSystemStorageService implements StorageService {
 
 	private final Path rootLocation;
-	private final SelfIssuedDAO selfIssuedDAO;
+	private final VCService vcService;
 
 	@Autowired
-	public FileSystemStorageService(StorageProperties properties, SelfIssuedDAO selfIssuedDAO) {
+	public FileSystemStorageService(StorageProperties properties, VCService vcService) {
 		this.rootLocation = Paths.get(properties.getLocation());
-		this.selfIssuedDAO = selfIssuedDAO;
+		this.vcService = vcService;
 	}
 
 	@Override
-	public Long store(MultipartFile file, VCForSelfIssueDto vcForSelfIssueDto) {
+	public VC2ResponseDto store(MultipartFile file, VC2IssueDto vc2IssueDto) throws Exception {
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file.");
@@ -56,28 +58,14 @@ public class FileSystemStorageService implements StorageService {
 				Files.copy(inputStream, destinationFile,
 					StandardCopyOption.REPLACE_EXISTING);
 			}
-			Long CertificateId = saveEntity(vcForSelfIssueDto,fileName);
-			return CertificateId;
+			VC2ResponseDto Certificate = vcService.issueVC(vc2IssueDto);
+			return Certificate;
 		}
 		catch (IOException e) {
 			throw new StorageException("Failed to store file.", e);
 		}
 	}
 
-	private Long saveEntity(VCForSelfIssueDto vcForSelfIssueDto, String fileName){
-		SelfIssued certificate = new SelfIssued();
-		certificate.setFileName(fileName);
-		certificate.setTitle(vcForSelfIssueDto.getTitle());
-		certificate.setHolderId(vcForSelfIssueDto.getHolderId());
-		certificate.setExpireDate(vcForSelfIssueDto.getExpireDate());
-		certificate.setIssueDate(vcForSelfIssueDto.getIssueDate());
-		certificate.setIssuingAuthority(vcForSelfIssueDto.getIssuingAuthority());
-		certificate.setUpdatedAt(LocalDateTime.now());
-		certificate.setCreatedAt(LocalDateTime.now());
-
-		SelfIssued savedCertificate = selfIssuedDAO.insertSelfIssued(certificate);
-		return savedCertificate.getId();
-	}
 
 	@Override
 	public Stream<Path> loadAll() {
