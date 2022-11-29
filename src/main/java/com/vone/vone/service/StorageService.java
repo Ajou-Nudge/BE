@@ -12,13 +12,13 @@ public interface StorageService {
 
 	void init();
 
-	VC2ResponseDto store(MultipartFile file, VC2IssueDto vc2IssueDto)  throws Exception;
+	Long store(MultipartFile file, VC2IssueDto vc2IssueDto)  throws Exception;
 
 	Stream<Path> loadAll();
 
 	Path load(String filename);
 
-	Resource loadAsResource(String filename);
+	Resource loadAsResource(Long id);
 
 	void deleteAll();
 

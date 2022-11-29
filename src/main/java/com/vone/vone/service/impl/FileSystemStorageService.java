@@ -36,7 +36,7 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public VC2ResponseDto store(MultipartFile file, VC2IssueDto vc2IssueDto) throws Exception {
+	public Long store(MultipartFile file, VC2IssueDto vc2IssueDto) throws Exception {
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file.");
@@ -58,8 +58,9 @@ public class FileSystemStorageService implements StorageService {
 				Files.copy(inputStream, destinationFile,
 					StandardCopyOption.REPLACE_EXISTING);
 			}
-			VC2ResponseDto Certificate = vcService.issueVC(vc2IssueDto);
-			return Certificate;
+			vc2IssueDto.getVc().getCredentialSubject().setValue8(fileName);
+			Long CertificateId = vcService.listVC(vc2IssueDto);
+			return CertificateId;
 		}
 		catch (IOException e) {
 			throw new StorageException("Failed to store file.", e);
@@ -86,7 +87,27 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public Resource loadAsResource(String filename) {
+	public Resource loadAsResource(Long id) {
+		String filename = vcService.getFileNameById(id);
+		try {
+
+			Path file = load(filename);
+			Resource resource = new UrlResource(file.toUri());
+			if (resource.exists() || resource.isReadable()) {
+				return resource;
+			}
+			else {
+				throw new StorageFileNotFoundException(
+						"Could not read file: " + filename);
+
+			}
+		}
+		catch (MalformedURLException e) {
+			throw new StorageFileNotFoundException("Could not read file: " + filename, e);
+		}
+	}
+
+	private Resource loadAsResourceByName(String filename) {
 		try {
 			Path file = load(filename);
 			Resource resource = new UrlResource(file.toUri());

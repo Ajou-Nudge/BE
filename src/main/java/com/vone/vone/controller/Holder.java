@@ -67,20 +67,19 @@ public class Holder {
     }
 
     @ApiOperation(value = "인증서 셀프 등록", notes = "인증서를 등록합니다.")
-    @PostMapping("/self-issue-vc")
-    public ResponseEntity<VC2ResponseDto> handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("data") String data) throws Exception{
+    @PostMapping("/vc")
+    public ResponseEntity<Long> handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("data") String data) throws Exception{
         VC2IssueDto vcForSelfIssueDto = null;
         vcForSelfIssueDto = objectMapper.readValue(data,VC2IssueDto.class);
         System.out.println(vcForSelfIssueDto);
-        VC2ResponseDto res = storageService.store(file, vcForSelfIssueDto);
+        Long res = storageService.store(file, vcForSelfIssueDto);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
     @ApiOperation(value = "셀프등록한 인증서 다운", notes = "구현예정")
-    @GetMapping("/self-issue-vc/files/{filename:.+}")
+    @GetMapping("/file/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        System.out.println("call");
-        Resource file = storageService.loadAsResource(filename);
+    public ResponseEntity<Resource> serveFile(@PathVariable Long id) {
+        Resource file = storageService.loadAsResource(id);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
