@@ -2,6 +2,7 @@ package com.vone.vone.data.dao.impl;
 
 import com.vone.vone.config.security.SecurityUtil;
 import com.vone.vone.data.dao.MemberDAO;
+import com.vone.vone.data.dto.UserInfoDto;
 import com.vone.vone.data.entity.Member;
 import com.vone.vone.data.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,8 @@ public class MemberDAOImpl implements MemberDAO {
     }
 
     @Override
-    public String info() {
-        String userInfo = SecurityUtil.getCurrentMemberId();
+    public UserInfoDto info() {
+        UserInfoDto userInfo = SecurityUtil.getCurrentMemberId();
         return userInfo;
     }
 }

@@ -3,6 +3,7 @@ package com.vone.vone.service;
 import com.vone.vone.config.security.JwtTokenProvider;
 import com.vone.vone.config.security.TokenInfo;
 import com.vone.vone.data.dao.MemberDAO;
+import com.vone.vone.data.dto.UserInfoDto;
 import com.vone.vone.data.dto.UserJoinDto;
 import com.vone.vone.data.entity.Member;
 import com.vone.vone.data.repository.UserRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
-
     private final MemberDAO memberDAO;
 
     @Transactional
@@ -45,7 +46,7 @@ public class UserService {
     }
 
     @Transactional
-    public String info() {
+    public UserInfoDto info() {
         return memberDAO.info();
     }
 }
