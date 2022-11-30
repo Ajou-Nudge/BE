@@ -1,52 +1,18 @@
 package com.vone.vone.service;
 
-import com.vone.vone.config.security.JwtTokenProvider;
 import com.vone.vone.config.security.TokenInfo;
-import com.vone.vone.data.dao.MemberDAO;
 import com.vone.vone.data.dto.UserInfoDto;
 import com.vone.vone.data.dto.UserJoinDto;
+import com.vone.vone.data.dto.UserLoginRequestDto;
 import com.vone.vone.data.entity.Member;
-import com.vone.vone.data.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional(readOnly = true)
-@RequiredArgsConstructor
-public class UserService {
+import java.util.Optional;
 
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberDAO memberDAO;
+public interface UserService {
 
-    @Transactional
-    public TokenInfo login(String memberId, String password) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, password);
+    TokenInfo login(UserLoginRequestDto userLoginRequestDto);
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+    Member join(UserJoinDto userJoinDto);
 
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-
-        return tokenInfo;
-    }
-
-    @Transactional
-    public Member join(UserJoinDto userJoinDto) {
-        Member member = new Member();
-        member.setMemberId(userJoinDto.getMemberId());
-        member.setPassword(userJoinDto.getPassword());
-        member.getRoles().add(userJoinDto.getRole());
-        return memberDAO.join(member);
-    }
-
-    @Transactional
-    public UserInfoDto info() {
-        return memberDAO.info();
-    }
+    UserInfoDto info();
 }

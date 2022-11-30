@@ -22,9 +22,7 @@ public class User {
 
     @PostMapping("/login")
     public TokenInfo login(@RequestBody UserLoginRequestDto userLoginRequestDto) {
-        String memberId = userLoginRequestDto.getMemberId();
-        String password = userLoginRequestDto.getPassword();
-        TokenInfo tokenInfo = userService.login(memberId, password);
+        TokenInfo tokenInfo = userService.login(userLoginRequestDto);
         return tokenInfo;
     }
 

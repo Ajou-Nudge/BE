@@ -1,7 +1,6 @@
 package com.vone.vone.config.security;
 
 import com.vone.vone.data.dto.UserInfoDto;
-import com.vone.vone.service.CustomUserDetailsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
