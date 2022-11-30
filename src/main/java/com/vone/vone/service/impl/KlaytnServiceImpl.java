@@ -191,8 +191,12 @@ public class KlaytnServiceImpl implements KlaytnService {
         // You can get contract address
         // by running caver-java-examples/contract/deploy scenario.
         Contract contract = caver.contract.create(abi, contractAddress);
+        System.out.println(_value1);
+        System.out.println(_value2);
         List<Type> callResult = contract.call("hash",_value1, _value2,_value3,_value4,_value5,_value6,_value7,_value8, salt);
+
         String res = objectToString(callResult.get(0));
+        System.out.println(callResult);
         JSONObject jObject = new JSONObject(res);
         String result = jObject.getString("value");
 
