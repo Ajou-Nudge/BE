@@ -36,6 +36,12 @@ public class VCServiceImpl implements VCService {
     }
 
     @Override
+    public String getFileNameById(Long id){
+        VC vc = vcDAO.selectVC(id);
+        return vc.getValue8();
+    }
+
+    @Override
     public VC2ResponseDto issueVC(VC2IssueDto vc2IssueDto) throws Exception{
         VC vc = new VC();
         vc.setContext(vc2IssueDto.getVc().getContext());
@@ -68,7 +74,36 @@ public class VCServiceImpl implements VCService {
         vc2ResponseDto.setHash(res);
         return vc2ResponseDto;
     }
+    @Override
+    public Long listVC(VC2IssueDto vc2IssueDto) throws Exception{
+        VC vc = new VC();
+        vc.setContext(vc2IssueDto.getVc().getContext());
+        vc.setIssuer(vc2IssueDto.getVc().getIssuer());
+        vc.setValue1(vc2IssueDto.getVc().getCredentialSubject().getValue1());
+        vc.setValue2(vc2IssueDto.getVc().getCredentialSubject().getValue2());
+        vc.setValue3(vc2IssueDto.getVc().getCredentialSubject().getValue3());
+        vc.setValue4(vc2IssueDto.getVc().getCredentialSubject().getValue4());
+        vc.setValue5(vc2IssueDto.getVc().getCredentialSubject().getValue5());
+        vc.setValue6(vc2IssueDto.getVc().getCredentialSubject().getValue6());
+        vc.setValue7(vc2IssueDto.getVc().getCredentialSubject().getValue7());
+        vc.setValue8(vc2IssueDto.getVc().getCredentialSubject().getValue8());
+        vc.setUpdatedAt(LocalDateTime.now());
+        vc.setCreatedAt(LocalDateTime.now());
 
+        VC savedVC = vcDAO.insertVC(vc);
+
+        HoldersVC holdersVC = new HoldersVC();
+        holdersVC.setContext(savedVC.getContext());
+        holdersVC.setIssuerId(savedVC.getIssuer());
+        holdersVC.setVcId(savedVC.getId());
+        holdersVC.setHolderId(vc2IssueDto.getHolderId());
+        holdersVC.setCreatedAt(LocalDateTime.now());
+        holdersVC.setUpdatedAt(LocalDateTime.now());
+        holdersVCDAO.insertHoldersVC(holdersVC);
+
+
+        return savedVC.getId();
+    }
     @Override
     public List<VC2IssueDto> getVCByContext(String context) {
         List<HoldersVC> vcs = holdersVCDAO.getHoldersVCByContext(context);
