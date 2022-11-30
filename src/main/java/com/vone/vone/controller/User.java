@@ -1,6 +1,7 @@
 package com.vone.vone.controller;
 
 import com.vone.vone.config.security.TokenInfo;
+import com.vone.vone.data.dto.UserInfoDto;
 import com.vone.vone.data.dto.UserJoinDto;
 import com.vone.vone.data.dto.UserLoginRequestDto;
 import com.vone.vone.data.entity.Member;
@@ -21,9 +22,7 @@ public class User {
 
     @PostMapping("/login")
     public TokenInfo login(@RequestBody UserLoginRequestDto userLoginRequestDto) {
-        String memberId = userLoginRequestDto.getMemberId();
-        String password = userLoginRequestDto.getPassword();
-        TokenInfo tokenInfo = userService.login(memberId, password);
+        TokenInfo tokenInfo = userService.login(userLoginRequestDto);
         return tokenInfo;
     }
 
@@ -35,7 +34,8 @@ public class User {
     }
 
     @GetMapping("/info")
-    public String info() {
-        return userService.info();
+    public ResponseEntity<UserInfoDto> info() {
+        UserInfoDto userInfoDto = userService.info();
+        return ResponseEntity.status(HttpStatus.OK).body(userInfoDto);
     }
 }

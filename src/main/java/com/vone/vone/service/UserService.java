@@ -3,49 +3,31 @@ package com.vone.vone.service;
 import com.vone.vone.config.security.JwtTokenProvider;
 import com.vone.vone.config.security.TokenInfo;
 import com.vone.vone.data.dao.MemberDAO;
+import com.vone.vone.data.dto.UserInfoDto;
 import com.vone.vone.data.dto.UserJoinDto;
+import com.vone.vone.data.dto.UserLoginRequestDto;
 import com.vone.vone.data.entity.Member;
 import com.vone.vone.data.repository.UserRepository;
+import jnr.a64asm.Mem;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.AlreadyBuiltException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional(readOnly = true)
-@RequiredArgsConstructor
-public class UserService {
+import java.util.Optional;
 
-    private final UserRepository userRepository;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtTokenProvider jwtTokenProvider;
+public interface UserService {
 
-    private final MemberDAO memberDAO;
+    TokenInfo login(UserLoginRequestDto userLoginRequestDto);
 
-    @Transactional
-    public TokenInfo login(String memberId, String password) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, password);
+    Member join(UserJoinDto userJoinDto);
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-
-        return tokenInfo;
-    }
-
-    @Transactional
-    public Member join(UserJoinDto userJoinDto) {
-        Member member = new Member();
-        member.setMemberId(userJoinDto.getMemberId());
-        member.setPassword(userJoinDto.getPassword());
-        member.getRoles().add(userJoinDto.getRole());
-        return memberDAO.join(member);
-    }
-
-    @Transactional
-    public String info() {
-        return memberDAO.info();
-    }
+    UserInfoDto info();
 }
