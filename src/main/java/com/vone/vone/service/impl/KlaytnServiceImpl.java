@@ -128,7 +128,7 @@ public class KlaytnServiceImpl implements KlaytnService {
         String didId = "did:vone:"+vc.getIssuer().substring(2);
 
         String hashOnChain = getVCFromKlaytn(didId, vcId);
-        String hash = hash(vc.getValue1(),vc.getValue2(),vc.getValue3(),vc.getValue4(),vc.getValue5(),vc.getValue6(),vc.getValue7(),vc.getValue8());
+        String hash = hash(vc.getContextValues());
         if(hash.equals(hashOnChain)){
             return true;
         }
@@ -137,6 +137,7 @@ public class KlaytnServiceImpl implements KlaytnService {
 
     @Override
     public String hash(String _value1,String _value2,String _value3,String _value4,String _value5,String _value6,String _value7,String _value8) throws Exception {
+       
         HttpService httpService = new HttpService(nodeApiUrl);
         httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
         httpService.addHeader("x-chain-id", chainId);
@@ -199,6 +200,7 @@ public class KlaytnServiceImpl implements KlaytnService {
         // You can get contract address
         // by running caver-java-examples/contract/deploy scenario.
         Contract contract = caver.contract.create(abi, contractAddress);
+
         _value1 = nullToZero(_value1);
         _value2 = nullToZero(_value2);
         _value3 = nullToZero(_value3);

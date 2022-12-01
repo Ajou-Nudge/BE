@@ -1,9 +1,11 @@
 package com.vone.vone.data.entity;
 
-import com.vone.vone.data.dto.CredentialSubject;
+import lombok.Builder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table( name="VC" )
@@ -15,22 +17,10 @@ public class VC {
     private String context;
     @Column(nullable = false)
     private String issuer;
-    @Column(nullable = false)
-    private String value1;
-    @Column(nullable = true)
-    private String value2;
-    @Column(nullable = true)
-    private String value3;
-    @Column(nullable = true)
-    private String value4;
-    @Column(nullable = true)
-    private String value5;
-    @Column(nullable = true)
-    private String value6;
-    @Column(nullable = true)
-    private String value7;
-    @Column(nullable = true)
-    private String value8;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> contextValues = new ArrayList<>();
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -59,68 +49,12 @@ public class VC {
         this.issuer = issuer;
     }
 
-    public String getValue1() {
-        return value1;
+    public List<String> getContextValues() {
+        return contextValues;
     }
 
-    public void setValue1(String value1) {
-        this.value1 = value1;
-    }
-
-    public String getValue2() {
-        return value2;
-    }
-
-    public void setValue2(String value2) {
-        this.value2 = value2;
-    }
-
-    public String getValue3() {
-        return value3;
-    }
-
-    public void setValue3(String value3) {
-        this.value3 = value3;
-    }
-
-    public String getValue4() {
-        return value4;
-    }
-
-    public void setValue4(String value4) {
-        this.value4 = value4;
-    }
-
-    public String getValue5() {
-        return value5;
-    }
-
-    public void setValue5(String value5) {
-        this.value5 = value5;
-    }
-
-    public String getValue6() {
-        return value6;
-    }
-
-    public void setValue6(String value6) {
-        this.value6 = value6;
-    }
-
-    public String getValue7() {
-        return value7;
-    }
-
-    public void setValue7(String value7) {
-        this.value7 = value7;
-    }
-
-    public String getValue8() {
-        return value8;
-    }
-
-    public void setValue8(String value8) {
-        this.value8 = value8;
+    public void setContextValues(List<String> contextValues) {
+        this.contextValues = contextValues;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -146,14 +80,14 @@ public class VC {
                 "id=" + id +
                 ", context='" + context + '\'' +
                 ", issuer='" + issuer + '\'' +
-                ", value1='" + value1 + '\'' +
-                ", value2='" + value2 + '\'' +
-                ", value3='" + value3 + '\'' +
-                ", value4='" + value4 + '\'' +
-                ", value5='" + value5 + '\'' +
-                ", value6='" + value6 + '\'' +
-                ", value7='" + value7 + '\'' +
-                ", value8='" + value8 + '\'' +
+                ", value1='" + contextValues.get(0) + '\'' +
+                ", value2='" + contextValues.get(1) + '\'' +
+                ", value3='" + contextValues.get(2) + '\'' +
+                ", value4='" + contextValues.get(3) + '\'' +
+                ", value5='" + contextValues.get(4) + '\'' +
+                ", value6='" + contextValues.get(5) + '\'' +
+                ", value7='" + contextValues.get(6) + '\'' +
+                ", value8='" + contextValues.get(7) + '\'' +
                 '}';
     }
 }

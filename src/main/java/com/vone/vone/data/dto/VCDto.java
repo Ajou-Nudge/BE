@@ -12,5 +12,4 @@ public class VCDto {
     private String context;
     private String issuer;
     private CredentialSubject credentialSubject;
-
 }

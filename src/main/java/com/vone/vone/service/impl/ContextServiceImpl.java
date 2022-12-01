@@ -27,7 +27,7 @@ public class ContextServiceImpl implements ContextService {
         List<ContextDto> contextDtos = new ArrayList<>();
 
         for (Context context : contexts) {
-            CredentialSubject credentialSubject = new CredentialSubject(context.getValue1(),context.getValue2(),context.getValue3(),context.getValue4(),context.getValue5(),context.getValue6(),context.getValue7(),context.getValue8());
+            CredentialSubject credentialSubject = new CredentialSubject(context.getContextValues());
             ContextDto contextDto = new ContextDto(context.getContext(),credentialSubject);
 
             contextDtos.add(contextDto);
@@ -40,14 +40,7 @@ public class ContextServiceImpl implements ContextService {
     public ContextDto saveContext(ContextDto contextDto){
         Context context = new Context();
         context.setContext(contextDto.getContext());
-        context.setValue1(contextDto.getCredentialSubject().getValue1());
-        context.setValue2(contextDto.getCredentialSubject().getValue2());
-        context.setValue3(contextDto.getCredentialSubject().getValue3());
-        context.setValue4(contextDto.getCredentialSubject().getValue4());
-        context.setValue5(contextDto.getCredentialSubject().getValue5());
-        context.setValue6(contextDto.getCredentialSubject().getValue6());
-        context.setValue7(contextDto.getCredentialSubject().getValue7());
-        context.setValue8(contextDto.getCredentialSubject().getValue8());
+        context.setContextValues(contextDto.getCredentialSubject().getValues());
         context.setUpdatedAt(LocalDateTime.now());
         context.setCreatedAt(LocalDateTime.now());
 
@@ -62,7 +55,7 @@ public class ContextServiceImpl implements ContextService {
 
         for (String contextName : contexts) {
             Context context = contextDAO.selectContext(contextName);
-            CredentialSubject credentialSubject = new CredentialSubject(context.getValue1(),context.getValue2(),context.getValue3(),context.getValue4(),context.getValue5(),context.getValue6(),context.getValue7(),context.getValue8());
+            CredentialSubject credentialSubject = new CredentialSubject(context.getContextValues());
             ContextDto contextDto = new ContextDto(contextName,credentialSubject);
 
             contextDtos.add(contextDto);
