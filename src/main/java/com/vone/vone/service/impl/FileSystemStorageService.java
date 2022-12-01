@@ -58,7 +58,7 @@ public class FileSystemStorageService implements StorageService {
 				Files.copy(inputStream, destinationFile,
 					StandardCopyOption.REPLACE_EXISTING);
 			}
-			vc2IssueDto.getVc().getCredentialSubject().setValue8(fileName);
+			vc2IssueDto.getVc().getCredentialSubject().getValues().add(fileName);
 			Long CertificateId = vcService.listVC(vc2IssueDto);
 			return CertificateId;
 		}

@@ -2,8 +2,10 @@ package com.vone.vone.controller;
 
 import com.vone.vone.data.dto.*;
 import com.vone.vone.data.entity.HoldersVC;
+import com.vone.vone.data.entity.VC;
 import com.vone.vone.data.repository.VCRepository;
 import com.vone.vone.service.ContextService;
+import com.vone.vone.service.JsonParsingService;
 import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.VCService;
 import io.swagger.annotations.ApiOperation;
@@ -25,11 +27,13 @@ public class Issuer {
     private final ContextService contextService;
     private final VCService vcService;
     private final KlaytnService klaytnService;
+    private final JsonParsingService jsonParsingService;
     @Autowired
-    public Issuer (ContextService contextService, VCService vcService,KlaytnService klaytnService) {
+    public Issuer (ContextService contextService, VCService vcService,KlaytnService klaytnService, JsonParsingService jsonParsingService) {
         this.contextService = contextService;
         this.vcService = vcService;
         this.klaytnService = klaytnService;
+        this.jsonParsingService = jsonParsingService;
     }
 
 
@@ -72,15 +76,16 @@ public class Issuer {
 
     @Operation(summary = "발행한 VC 목록", description = "해당 Context인 VC 목록을 반환합니다.")
     @GetMapping("/vc-list")
-    public ResponseEntity<List<VC2IssueDto>> getIssuedVCListByContext() {
+    public ResponseEntity<String> getIssuedVCListByContext() {
         List<VC2IssueDto> vcs = vcService.getAllVC();
-
-        return ResponseEntity.status(HttpStatus.OK).body(vcs);
+        VC2IssueDto vc = vcs.get(0);
+        String result = jsonParsingService.vc2IssueDtoToJson(vc);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PostMapping("/hash")
     public ResponseEntity<String> getHash(@RequestBody  CredentialSubject credentialSubject) throws Exception {
-        String res = klaytnService.hash(credentialSubject.getValue1(),credentialSubject.getValue2(),credentialSubject.getValue3(),credentialSubject.getValue4(),credentialSubject.getValue5(),credentialSubject.getValue6(),credentialSubject.getValue7(),credentialSubject.getValue8());
+        String res = klaytnService.hash(credentialSubject.getValues());
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }
