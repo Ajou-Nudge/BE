@@ -3,9 +3,11 @@ package com.vone.vone.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.common.collect.ObjectArrays;
 import com.klaytn.caver.Caver;
 import com.klaytn.caver.abi.datatypes.Type;
 import com.klaytn.caver.contract.Contract;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.vone.vone.data.dao.HoldersVCDAO;
 import com.vone.vone.data.dao.PostDAO;
@@ -24,6 +26,7 @@ import org.web3j.protocol.http.HttpService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,13 +37,19 @@ import java.util.List;
 @Service
 public class KlaytnServiceImpl implements KlaytnService {
     // You can directly input values for the variables below, or you can enter values in the caver-java-examples/.env file.
-    private static String nodeApiUrl = ""; // e.g. "https://node-api.klaytnapi.com/v1/klaytn";
-    private static String accessKeyId = ""; // e.g. "KASK1LVNO498YT6KJQFUPY8S";
-    private static String secretAccessKey = ""; // e.g. "aP/reVYHXqjw3EtQrMuJP4A3/hOb69TjnBT3ePKG";
-    private static String chainId = ""; // e.g. "1001" or "8217";
-    private static String contractAddress = "";
+    @Value("${klaytn.nodeurl}")
+    private String nodeApiUrl; // e.g. "https://node-api.klaytnapi.com/v1/klaytn";
+    @Value("${klaytn.acesskey}")
+    private String accessKeyId = ""; // e.g. "KASK1LVNO498YT6KJQFUPY8S";
+    @Value("${klaytn.secretaccesskey}")
+    private String secretAccessKey = ""; // e.g. "aP/reVYHXqjw3EtQrMuJP4A3/hOb69TjnBT3ePKG";
+    @Value("${klaytn.chainid}")
+    private String chainId = ""; // e.g. "1001" or "8217";
+    @Value("${klaytn.contractaddress}")
+    private String contractAddress = "";
     private final VCDAO vcDAO;
-    private static String salt = "";
+    @Value("${klaytn.salt}")
+    private String salt = "";
 
     @Autowired
     public KlaytnServiceImpl(VCDAO vcDAO){
@@ -52,19 +61,18 @@ public class KlaytnServiceImpl implements KlaytnService {
         return ow.writeValueAsString(value);
     }
 
-    public static void loadEnv() {
-        Dotenv env;
-        env = Dotenv.configure().directory(".").load();
-
-        nodeApiUrl = nodeApiUrl.equals("") ? env.get("NODE_API_URL") : nodeApiUrl;
-        accessKeyId = accessKeyId.equals("") ? env.get("ACCESS_KEY_ID") : accessKeyId;
-        secretAccessKey = secretAccessKey.equals("") ? env.get("SECRET_ACCESS_KEY") : secretAccessKey;
-        chainId = chainId.equals("") ? env.get("CHAIN_ID") : chainId;
-        contractAddress = contractAddress.equals("") ? env.get("CONTRACT_ADDRESS") : contractAddress;
-        salt = salt.equals("") ? env.get("SALT") : salt;
-    }
+//    public static void loadEnv() {
+//        Dotenv env;
+//        env = Dotenv.configure().directory(".").load();
+//
+//        nodeApiUrl = nodeApiUrl.equals("") ? env.get("NODE_API_URL") : nodeApiUrl;
+//        accessKeyId = accessKeyId.equals("") ? env.get("ACCESS_KEY_ID") : accessKeyId;
+//        secretAccessKey = secretAccessKey.equals("") ? env.get("SECRET_ACCESS_KEY") : secretAccessKey;
+//        chainId = chainId.equals("") ? env.get("CHAIN_ID") : chainId;
+//        contractAddress = contractAddress.equals("") ? env.get("CONTRACT_ADDRESS") : contractAddress;
+//        salt = salt.equals("") ? env.get("SALT") : salt;
+//    }
     public String getVCFromKlaytn(String didId, Long vcId) throws Exception {
-        loadEnv();
         HttpService httpService = new HttpService(nodeApiUrl);
         httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
         httpService.addHeader("x-chain-id", chainId);
@@ -129,10 +137,10 @@ public class KlaytnServiceImpl implements KlaytnService {
 
     @Override
     public String hash(String _value1,String _value2,String _value3,String _value4,String _value5,String _value6,String _value7,String _value8) throws Exception {
-        loadEnv();
         HttpService httpService = new HttpService(nodeApiUrl);
         httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
         httpService.addHeader("x-chain-id", chainId);
+        System.out.println(nodeApiUrl);
         Caver caver = new Caver(httpService);
         // abi is extracted by compiling caver-java-examples/resources/KVstore.sol using solc(solidity compiler)
         String abi = "[\n" +
@@ -191,15 +199,33 @@ public class KlaytnServiceImpl implements KlaytnService {
         // You can get contract address
         // by running caver-java-examples/contract/deploy scenario.
         Contract contract = caver.contract.create(abi, contractAddress);
-        System.out.println(_value1);
-        System.out.println(_value2);
+        _value1 = nullToZero(_value1);
+        _value2 = nullToZero(_value2);
+        _value3 = nullToZero(_value3);
+        _value4 = nullToZero(_value4);
+        _value5 = nullToZero(_value5);
+        _value6 = nullToZero(_value6);
+        _value7 = nullToZero(_value7);
+        _value8 = nullToZero(_value8);
+        salt = nullToZero(salt);
         List<Type> callResult = contract.call("hash",_value1, _value2,_value3,_value4,_value5,_value6,_value7,_value8, salt);
 
         String res = objectToString(callResult.get(0));
-        System.out.println(callResult);
         JSONObject jObject = new JSONObject(res);
         String result = jObject.getString("value");
 
         return result;
+    }
+
+    private String nullToZero(String input){
+        if(input==null){
+            return "0";
+        }
+        return input;
+    }
+    private void test(Object... t){
+        List<Object> temp = Arrays.asList(t);
+        System.out.println(temp);
+        System.out.println(temp.get(2).toString());
     }
 }
