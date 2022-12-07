@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,14 +48,14 @@ public class Holder {
 
     @ApiOperation(value = "보유 인증서 목록", notes = "Holder가 보유중인 vc 리스트를 반환합니다.")
     @GetMapping("/vc-list/{holderId}")
-    public ResponseEntity<List<VCDto>> getVCList(@PathVariable String holderId) {
+    public ResponseEntity<List<VCDto>> getVCList(@PathVariable String holderId) throws JSONException {
         List<VCDto> vcDtos = vcService.getVCByHolderId(holderId);
         return ResponseEntity.status(HttpStatus.OK).body(vcDtos);
     }
 
     @ApiOperation(value = "인증서 제출", notes = "인증서와 인증서 내용을 제출합니다.")
     @PostMapping("/submitted-vc")
-    public ResponseEntity<String> submitVCs(@RequestBody VC2VerifyDto vc2VerifyDto) {
+    public ResponseEntity<String> submitVCs(@RequestBody VC2VerifyDto vc2VerifyDto) throws JSONException {
         vcService.submitVC(vc2VerifyDto);
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
@@ -78,7 +79,7 @@ public class Holder {
     @ApiOperation(value = "셀프등록한 인증서 다운", notes = "구현예정")
     @GetMapping("/file/{id}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable Long id) {
+    public ResponseEntity<Resource> serveFile(@PathVariable Long id) throws JSONException {
         Resource file = storageService.loadAsResource(id);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);

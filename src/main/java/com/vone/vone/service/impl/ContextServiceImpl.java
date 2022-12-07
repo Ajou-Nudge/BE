@@ -2,7 +2,6 @@ package com.vone.vone.service.impl;
 
 import com.vone.vone.data.dao.ContextDAO;
 import com.vone.vone.data.dto.ContextDto;
-import com.vone.vone.data.dto.CredentialSubject;
 import com.vone.vone.data.entity.Context;
 import com.vone.vone.service.ContextService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,7 @@ public class ContextServiceImpl implements ContextService {
         List<ContextDto> contextDtos = new ArrayList<>();
 
         for (Context context : contexts) {
-            CredentialSubject credentialSubject = new CredentialSubject(context.getContextValues());
-            ContextDto contextDto = new ContextDto(context.getContext(),credentialSubject);
+            ContextDto contextDto = new ContextDto(context.getContext(),context.getCredentialSubject());
 
             contextDtos.add(contextDto);
         }
@@ -40,7 +38,7 @@ public class ContextServiceImpl implements ContextService {
     public ContextDto saveContext(ContextDto contextDto){
         Context context = new Context();
         context.setContext(contextDto.getContext());
-        context.setContextValues(contextDto.getCredentialSubject().getValues());
+        context.setCredentialSubject(contextDto.getCredentialSubject());
         context.setUpdatedAt(LocalDateTime.now());
         context.setCreatedAt(LocalDateTime.now());
 
@@ -55,8 +53,7 @@ public class ContextServiceImpl implements ContextService {
 
         for (String contextName : contexts) {
             Context context = contextDAO.selectContext(contextName);
-            CredentialSubject credentialSubject = new CredentialSubject(context.getContextValues());
-            ContextDto contextDto = new ContextDto(contextName,credentialSubject);
+            ContextDto contextDto = new ContextDto(contextName,context.getCredentialSubject());
 
             contextDtos.add(contextDto);
         }

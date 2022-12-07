@@ -2,6 +2,8 @@ package com.vone.vone.data.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -11,5 +13,5 @@ import lombok.*;
 @Builder
 public class ContextDto {
     private String context;
-    private CredentialSubject credentialSubject;
+    private List<String> credentialSubject;
 }

@@ -1,6 +1,5 @@
 package com.vone.vone.data.entity;
 
-import com.vone.vone.data.dto.CredentialSubject;
 import lombok.Builder;
 
 import javax.persistence.*;
@@ -14,9 +13,8 @@ public class Context {
     @Id
     private String context;
     @ElementCollection
-    @Builder.Default
-    private List<String> contextValues = new ArrayList<>();
-
+    @Builder.Default()
+    private List<String> credentialSubject = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -28,12 +26,12 @@ public class Context {
         this.context = context;
     }
 
-    public List<String> getContextValues() {
-        return contextValues;
+    public List<String> getCredentialSubject() {
+        return credentialSubject;
     }
 
-    public void setContextValues(List<String> contextValues) {
-        this.contextValues = contextValues;
+    public void setCredentialSubject(List<String> credentialSubject) {
+        this.credentialSubject = credentialSubject;
     }
 
     public LocalDateTime getCreatedAt() {

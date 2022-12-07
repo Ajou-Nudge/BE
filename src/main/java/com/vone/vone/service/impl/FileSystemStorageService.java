@@ -7,6 +7,7 @@ import com.vone.vone.data.entity.VC;
 import com.vone.vone.service.StorageService;
 import com.vone.vone.service.VCService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class FileSystemStorageService implements StorageService {
 				Files.copy(inputStream, destinationFile,
 					StandardCopyOption.REPLACE_EXISTING);
 			}
-			vc2IssueDto.getVc().getCredentialSubject().getValues().add(fileName);
+			vc2IssueDto.getVc().getCredentialSubject().put("fileName", fileName);
 			Long CertificateId = vcService.listVC(vc2IssueDto);
 			return CertificateId;
 		}
@@ -87,7 +88,7 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public Resource loadAsResource(Long id) {
+	public Resource loadAsResource(Long id) throws JSONException {
 		String filename = vcService.getFileNameById(id);
 		try {
 

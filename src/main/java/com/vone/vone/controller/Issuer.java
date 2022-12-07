@@ -1,24 +1,21 @@
 package com.vone.vone.controller;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vone.vone.data.dto.*;
-import com.vone.vone.data.entity.HoldersVC;
-import com.vone.vone.data.entity.VC;
-import com.vone.vone.data.repository.VCRepository;
 import com.vone.vone.service.ContextService;
-import com.vone.vone.service.JsonParsingService;
 import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.VCService;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/issuer")
@@ -27,13 +24,12 @@ public class Issuer {
     private final ContextService contextService;
     private final VCService vcService;
     private final KlaytnService klaytnService;
-    private final JsonParsingService jsonParsingService;
+
     @Autowired
-    public Issuer (ContextService contextService, VCService vcService,KlaytnService klaytnService, JsonParsingService jsonParsingService) {
+    public Issuer (ContextService contextService, VCService vcService,KlaytnService klaytnService) {
         this.contextService = contextService;
         this.vcService = vcService;
         this.klaytnService = klaytnService;
-        this.jsonParsingService = jsonParsingService;
     }
 
 
@@ -71,21 +67,23 @@ public class Issuer {
         List <String> contexts = vcService.getVCsContextByIssuerId(issuerId);
         List <ContextDto> contextsDtos = contextService.getVCsContext(contexts);
 
+
+        Map<String, String> result;
+
         return ResponseEntity.status(HttpStatus.OK).body(contextsDtos);
     }
 
     @Operation(summary = "발행한 VC 목록", description = "해당 Context인 VC 목록을 반환합니다.")
     @GetMapping("/vc-list")
-    public ResponseEntity<String> getIssuedVCListByContext() {
+    public ResponseEntity<List<VC2IssueDto>> getIssuedVCListByContext() throws JsonProcessingException, JSONException {
         List<VC2IssueDto> vcs = vcService.getAllVC();
-        VC2IssueDto vc = vcs.get(0);
-        String result = jsonParsingService.vc2IssueDtoToJson(vc);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.OK).body(vcs);
     }
 
     @PostMapping("/hash")
-    public ResponseEntity<String> getHash(@RequestBody  CredentialSubject credentialSubject) throws Exception {
-        String res = klaytnService.hash(credentialSubject.getValues());
+    public ResponseEntity<String> getHash(@RequestBody List<String> credentialSubject) throws Exception {
+        String res = klaytnService.hash(credentialSubject);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
+
 }

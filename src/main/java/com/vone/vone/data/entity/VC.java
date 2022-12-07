@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table( name="VC" )
@@ -20,7 +21,7 @@ public class VC {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    private List<String> contextValues = new ArrayList<>();
+    private Map<String, String> credentialSubject;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -49,12 +50,12 @@ public class VC {
         this.issuer = issuer;
     }
 
-    public List<String> getContextValues() {
-        return contextValues;
+    public Map<String, String> getCredentialSubject() {
+        return credentialSubject;
     }
 
-    public void setContextValues(List<String> contextValues) {
-        this.contextValues = contextValues;
+    public void setCredentialSubject(Map<String, String> credentialSubject) {
+        this.credentialSubject = credentialSubject;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -80,14 +81,14 @@ public class VC {
                 "id=" + id +
                 ", context='" + context + '\'' +
                 ", issuer='" + issuer + '\'' +
-                ", value1='" + contextValues.get(0) + '\'' +
-                ", value2='" + contextValues.get(1) + '\'' +
-                ", value3='" + contextValues.get(2) + '\'' +
-                ", value4='" + contextValues.get(3) + '\'' +
-                ", value5='" + contextValues.get(4) + '\'' +
-                ", value6='" + contextValues.get(5) + '\'' +
-                ", value7='" + contextValues.get(6) + '\'' +
-                ", value8='" + contextValues.get(7) + '\'' +
+                ", value1='" + credentialSubject.get(0) + '\'' +
+                ", value2='" + credentialSubject.get(1) + '\'' +
+                ", value3='" + credentialSubject.get(2) + '\'' +
+                ", value4='" + credentialSubject.get(3) + '\'' +
+                ", value5='" + credentialSubject.get(4) + '\'' +
+                ", value6='" + credentialSubject.get(5) + '\'' +
+                ", value7='" + credentialSubject.get(6) + '\'' +
+                ", value8='" + credentialSubject.get(7) + '\'' +
                 '}';
     }
 }

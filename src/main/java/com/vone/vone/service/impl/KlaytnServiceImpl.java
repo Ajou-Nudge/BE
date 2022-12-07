@@ -3,23 +3,16 @@ package com.vone.vone.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.common.collect.ObjectArrays;
 import com.klaytn.caver.Caver;
 import com.klaytn.caver.abi.datatypes.Type;
 import com.klaytn.caver.contract.Contract;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.vone.vone.data.dao.HoldersVCDAO;
-import com.vone.vone.data.dao.PostDAO;
-import com.vone.vone.data.dao.SubmittedVCDAO;
 import com.vone.vone.data.dao.VCDAO;
-import com.vone.vone.data.dto.CredentialSubject;
 import com.vone.vone.data.entity.VC;
 import com.vone.vone.service.KlaytnService;
-import io.github.cdimascio.dotenv.Dotenv;
 import okhttp3.Credentials;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.http.HttpService;
@@ -128,7 +121,11 @@ public class KlaytnServiceImpl implements KlaytnService {
         String didId = "did:vone:"+vc.getIssuer().substring(2);
 
         String hashOnChain = getVCFromKlaytn(didId, vcId);
-        String hash = hash(vc.getContextValues());
+
+        List<String> credentialSubject = new ArrayList<>(vc.getCredentialSubject().values());
+
+        String hash = hash(credentialSubject);
+
         if(hash.equals(hashOnChain)){
             return true;
         }
@@ -136,7 +133,7 @@ public class KlaytnServiceImpl implements KlaytnService {
     }
 
     @Override
-    public String hash(String _value1,String _value2,String _value3,String _value4,String _value5,String _value6,String _value7,String _value8) throws Exception {
+    public String hash(List<String> values) throws Exception {
        
         HttpService httpService = new HttpService(nodeApiUrl);
         httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
@@ -201,16 +198,7 @@ public class KlaytnServiceImpl implements KlaytnService {
         // by running caver-java-examples/contract/deploy scenario.
         Contract contract = caver.contract.create(abi, contractAddress);
 
-        _value1 = nullToZero(_value1);
-        _value2 = nullToZero(_value2);
-        _value3 = nullToZero(_value3);
-        _value4 = nullToZero(_value4);
-        _value5 = nullToZero(_value5);
-        _value6 = nullToZero(_value6);
-        _value7 = nullToZero(_value7);
-        _value8 = nullToZero(_value8);
-        salt = nullToZero(salt);
-        List<Type> callResult = contract.call("hash",_value1, _value2,_value3,_value4,_value5,_value6,_value7,_value8, salt);
+        List<Type> callResult = contract.call("hash",values.get(0), values.get(1),values.get(2),values.get(3),values.get(4),values.get(5),values.get(6),values.get(7), salt);
 
         String res = objectToString(callResult.get(0));
         JSONObject jObject = new JSONObject(res);
@@ -219,12 +207,6 @@ public class KlaytnServiceImpl implements KlaytnService {
         return result;
     }
 
-    private String nullToZero(String input){
-        if(input==null){
-            return "0";
-        }
-        return input;
-    }
     private void test(Object... t){
         List<Object> temp = Arrays.asList(t);
         System.out.println(temp);
