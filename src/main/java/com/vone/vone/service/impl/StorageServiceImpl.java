@@ -1,9 +1,6 @@
 package com.vone.vone.service.impl;
 
-import com.vone.vone.data.dao.VCDAO;
 import com.vone.vone.data.dto.VC2IssueDto;
-import com.vone.vone.data.dto.VC2ResponseDto;
-import com.vone.vone.data.entity.VC;
 import com.vone.vone.service.StorageService;
 import com.vone.vone.service.VCService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +18,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 @Service
-public class FileSystemStorageService implements StorageService {
+public class StorageServiceImpl implements StorageService {
 
 	private final Path rootLocation;
 	private final VCService vcService;
 
 	@Autowired
-	public FileSystemStorageService(StorageProperties properties, VCService vcService) {
+	public StorageServiceImpl(StorageProperties properties, VCService vcService) {
 		this.rootLocation = Paths.get(properties.getLocation());
 		this.vcService = vcService;
 	}

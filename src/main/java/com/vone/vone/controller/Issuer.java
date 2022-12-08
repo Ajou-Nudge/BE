@@ -1,6 +1,5 @@
 package com.vone.vone.controller;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vone.vone.data.dto.*;
 import com.vone.vone.service.ContextService;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/issuer")
@@ -36,9 +34,7 @@ public class Issuer {
     @Operation(summary = "VC Context 생성", description = "새로운 context를 생성합니다.")
     @PostMapping("/context")
     public ResponseEntity<ContextDto> createContext(@RequestBody ContextDto contextdto) {
-        // 1. noSQL 생성
         contextService.saveContext(contextdto);
-
         return ResponseEntity.status(HttpStatus.OK).body(contextdto);
     }
 
@@ -57,7 +53,6 @@ public class Issuer {
     @GetMapping("/context-list")
     public ResponseEntity<List<ContextDto>> getContextList() {
         List<ContextDto> contextDtos = contextService.getAllContext();
-
         return ResponseEntity.status(HttpStatus.OK).body(contextDtos);
     }
 
@@ -66,10 +61,6 @@ public class Issuer {
     public ResponseEntity<List<ContextDto>> getIssuedContextList(@PathVariable String issuerId) {
         List <String> contexts = vcService.getVCsContextByIssuerId(issuerId);
         List <ContextDto> contextsDtos = contextService.getVCsContext(contexts);
-
-
-        Map<String, String> result;
-
         return ResponseEntity.status(HttpStatus.OK).body(contextsDtos);
     }
 
@@ -85,5 +76,4 @@ public class Issuer {
         String res = klaytnService.hash(credentialSubject);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
-
 }

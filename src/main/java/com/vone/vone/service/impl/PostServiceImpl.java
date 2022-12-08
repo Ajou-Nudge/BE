@@ -76,7 +76,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponseDto savePost(PostDto postDto){
         Post post = new Post();
-        post.setVerifierId(postDto.getVerifierId());
+        post.setVerifierId(postDto.getVerifier());
         post.setExpired(postDto.getExpired());
         post.setRequired(postDto.getRequired());
         post.setUrl(postDto.getUrl());

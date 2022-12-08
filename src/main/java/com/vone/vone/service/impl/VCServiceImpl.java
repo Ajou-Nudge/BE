@@ -58,35 +58,30 @@ public class VCServiceImpl implements VCService {
         Map<String, String> credentialSubject = new HashMap<>();
         Context context = contextRepository.findByContext(vc2IssueDto.getVc().getContext());
 
-        credentialSubject.put(context.getCredentialSubject().get(0), vc2IssueDto.getVc().getCredentialSubject().get("0"));
-        credentialSubject.put(context.getCredentialSubject().get(1), vc2IssueDto.getVc().getCredentialSubject().get("1"));
-        credentialSubject.put(context.getCredentialSubject().get(2), vc2IssueDto.getVc().getCredentialSubject().get("2"));
-        credentialSubject.put(context.getCredentialSubject().get(3), vc2IssueDto.getVc().getCredentialSubject().get("3"));
-        credentialSubject.put(context.getCredentialSubject().get(4), vc2IssueDto.getVc().getCredentialSubject().get("4"));
-        credentialSubject.put(context.getCredentialSubject().get(5), vc2IssueDto.getVc().getCredentialSubject().get("5"));
-        credentialSubject.put(context.getCredentialSubject().get(6), vc2IssueDto.getVc().getCredentialSubject().get("6"));
-        credentialSubject.put(context.getCredentialSubject().get(7), vc2IssueDto.getVc().getCredentialSubject().get("7"));
+        for (int i = 0; i < context.getCredentialSubject().size(); i++)
+        {
+            credentialSubject.put(context.getCredentialSubject().get(i), vc2IssueDto.getVc().getCredentialSubject().get(Integer.toString(i)));
+        }
 
         vc.setCredentialSubject(credentialSubject);
         vc.setUpdatedAt(LocalDateTime.now());
         vc.setCreatedAt(LocalDateTime.now());
-
         VC savedVC = vcDAO.insertVC(vc);
 
         HoldersVC holdersVC = new HoldersVC();
         holdersVC.setContext(savedVC.getContext());
         holdersVC.setIssuerId(savedVC.getIssuer());
         holdersVC.setVcId(savedVC.getId());
-        holdersVC.setHolderId(vc2IssueDto.getHolderId());
+        holdersVC.setHolderId(vc2IssueDto.getHolder());
         holdersVC.setCreatedAt(LocalDateTime.now());
         holdersVC.setUpdatedAt(LocalDateTime.now());
         holdersVCDAO.insertHoldersVC(holdersVC);
 
         List<String> csList = new ArrayList<>(credentialSubject.values());
-
         String res = klaytnService.hash(csList);
+
         VC2ResponseDto vc2ResponseDto = new VC2ResponseDto();
-        vc2ResponseDto.setVcIds(vc.getId());
+        vc2ResponseDto.setVcId(vc.getId());
         vc2ResponseDto.setHash(res);
         return vc2ResponseDto;
     }
@@ -95,18 +90,16 @@ public class VCServiceImpl implements VCService {
         VC vc = new VC();
         vc.setContext(vc2IssueDto.getVc().getContext());
         vc.setIssuer(vc2IssueDto.getVc().getIssuer());
-
         vc.setCredentialSubject(vc2IssueDto.getVc().getCredentialSubject());
         vc.setUpdatedAt(LocalDateTime.now());
         vc.setCreatedAt(LocalDateTime.now());
-
         VC savedVC = vcDAO.insertVC(vc);
 
         HoldersVC holdersVC = new HoldersVC();
         holdersVC.setContext(savedVC.getContext());
         holdersVC.setIssuerId(savedVC.getIssuer());
         holdersVC.setVcId(savedVC.getId());
-        holdersVC.setHolderId(vc2IssueDto.getHolderId());
+        holdersVC.setHolderId(vc2IssueDto.getHolder());
         holdersVC.setCreatedAt(LocalDateTime.now());
         holdersVC.setUpdatedAt(LocalDateTime.now());
         holdersVCDAO.insertHoldersVC(holdersVC);
@@ -119,11 +112,9 @@ public class VCServiceImpl implements VCService {
         List<VC2IssueDto> vcResponses = new ArrayList<>();
         for(HoldersVC vc : vcs){
             VC2IssueDto vcResponse = new VC2IssueDto();
-
-            vcResponse.setHolderId(vc.getHolderId());
+            vcResponse.setHolder(vc.getHolderId());
             VC tempVc = vcDAO.selectVC(vc.getVcId());
             vcResponse.setVc(VCToVCDto(tempVc));
-
             vcResponses.add(vcResponse);
         }
         return vcResponses;
@@ -145,7 +136,7 @@ public class VCServiceImpl implements VCService {
         result.setContext(vc.getContext());
         result.setIssuer(vc.getIssuer());
         result.setCredentialSubject(vc.getCredentialSubject());
-
+        result.setVcId(vc.getId());
         return result;
     }
 
@@ -156,21 +147,17 @@ public class VCServiceImpl implements VCService {
         for(HoldersVC vc : vcs){
             VC tempVc = vcDAO.selectVC(vc.getVcId());
             VCDto vcResponse = VCToVCDto(tempVc);
-
             vcResponses.add(vcResponse);
         }
-
         return vcResponses;
     }
 
     @Override
     public boolean submitVC(VC2VerifyDto vc2VerifyDto) throws JSONException {
-
         String verifierId = postDAO.selectPost(vc2VerifyDto.getPostId()).getVerifierId();
 
         for(Long vcid : vc2VerifyDto.getVcIds()){
             VC tempVC = vcDAO.selectVC(vcid);
-
             SubmittedVC submittedVC = new SubmittedVC();
             submittedVC.setVerifierId(verifierId);
             submittedVC.setPostId(vc2VerifyDto.getPostId());
@@ -180,10 +167,7 @@ public class VCServiceImpl implements VCService {
             submittedVC.setStatus("pending");
             submittedVC.setCreatedAt(LocalDateTime.now());
             submittedVC.setUpdatedAt(LocalDateTime.now());
-
-
             submittedVCDAO.insertSubmittedVC(submittedVC);
-
         }
         return true;
     }
@@ -194,7 +178,6 @@ public class VCServiceImpl implements VCService {
         List<SubmittedVCResponseDto> submittedVCResponseDtos = new ArrayList<>();
         for(SubmittedVC vc : submittedVCS){
             Post post = postDAO.selectPost(vc.getPostId());
-
             SubmittedVCResponseDto submittedVCResponseDto = new SubmittedVCResponseDto();
             submittedVCResponseDto.setDate(vc.getUpdatedAt());
             submittedVCResponseDto.setStatus(vc.getStatus());
@@ -202,7 +185,6 @@ public class VCServiceImpl implements VCService {
             submittedVCResponseDto.setVerifier(vc.getVerifierId());
             submittedVCResponseDto.setPostId(vc.getPostId());
             submittedVCResponseDto.setVcIds(vc.getVcIds());
-
             submittedVCResponseDtos.add(submittedVCResponseDto);
         }
         return submittedVCResponseDtos;
@@ -214,7 +196,6 @@ public class VCServiceImpl implements VCService {
         List<SubmittedVCResponseDto> submittedVCResponseDtos = new ArrayList<>();
         for(SubmittedVC vc : submittedVCS){
             Post post = postDAO.selectPost(vc.getPostId());
-
             SubmittedVCResponseDto submittedVCResponseDto = new SubmittedVCResponseDto();
             submittedVCResponseDto.setDate(vc.getUpdatedAt());
             submittedVCResponseDto.setStatus(vc.getStatus());
@@ -222,7 +203,6 @@ public class VCServiceImpl implements VCService {
             submittedVCResponseDto.setVerifier(vc.getVerifierId());
             submittedVCResponseDto.setVcIds(vc.getVcIds());
             submittedVCResponseDto.setPostId(vc.getPostId());
-
             submittedVCResponseDtos.add(submittedVCResponseDto);
         }
 
@@ -235,10 +215,9 @@ public class VCServiceImpl implements VCService {
         List<VC2IssueDto> vcResponses = new ArrayList<>();
         for(HoldersVC vc : vcs){
             VC2IssueDto vcResponse = new VC2IssueDto();
-            vcResponse.setHolderId(vc.getHolderId());
+            vcResponse.setHolder(vc.getHolderId());
             VC tempVc = vcDAO.selectVC(vc.getVcId());
             vcResponse.setVc(VCToVCDto(tempVc));
-
             vcResponses.add(vcResponse);
         }
         return vcResponses;

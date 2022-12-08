@@ -14,8 +14,6 @@ public interface PostService {
 
     List<PostResponseDto> getAllPost();
 
-
-
     PostResponseDto changePostTitle(Long number, String title) throws Exception;
 
     void deletePost(Long number) throws Exception;

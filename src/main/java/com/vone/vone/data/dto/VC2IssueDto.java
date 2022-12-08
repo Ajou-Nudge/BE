@@ -10,6 +10,6 @@ import lombok.*;
 @ToString
 @Builder
 public class VC2IssueDto {
-    private String holderId;
+    private String holder;
     private VCDto vc;
 }

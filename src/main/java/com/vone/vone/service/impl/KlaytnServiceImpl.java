@@ -54,17 +54,6 @@ public class KlaytnServiceImpl implements KlaytnService {
         return ow.writeValueAsString(value);
     }
 
-//    public static void loadEnv() {
-//        Dotenv env;
-//        env = Dotenv.configure().directory(".").load();
-//
-//        nodeApiUrl = nodeApiUrl.equals("") ? env.get("NODE_API_URL") : nodeApiUrl;
-//        accessKeyId = accessKeyId.equals("") ? env.get("ACCESS_KEY_ID") : accessKeyId;
-//        secretAccessKey = secretAccessKey.equals("") ? env.get("SECRET_ACCESS_KEY") : secretAccessKey;
-//        chainId = chainId.equals("") ? env.get("CHAIN_ID") : chainId;
-//        contractAddress = contractAddress.equals("") ? env.get("CONTRACT_ADDRESS") : contractAddress;
-//        salt = salt.equals("") ? env.get("SALT") : salt;
-//    }
     public String getVCFromKlaytn(String didId, Long vcId) throws Exception {
         HttpService httpService = new HttpService(nodeApiUrl);
         httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
@@ -140,7 +129,7 @@ public class KlaytnServiceImpl implements KlaytnService {
         httpService.addHeader("x-chain-id", chainId);
         System.out.println(nodeApiUrl);
         Caver caver = new Caver(httpService);
-        // abi is extracted by compiling caver-java-examples/resources/KVstore.sol using solc(solidity compiler)
+
         String abi = "[\n" +
                 "{\n" +
                 "\t\t\"constant\": true,\n" +
@@ -194,22 +183,15 @@ public class KlaytnServiceImpl implements KlaytnService {
                 "\t\t\"type\": \"function\"\n" +
                 "\t}"+
                 "]";
-        // You can get contract address
-        // by running caver-java-examples/contract/deploy scenario.
+
         Contract contract = caver.contract.create(abi, contractAddress);
 
-        List<Type> callResult = contract.call("hash",values.get(0), values.get(1),values.get(2),values.get(3),values.get(4),values.get(5),values.get(6),values.get(7), salt);
+        List<Type> callResult = contract.call("hash",values.get(0), values.get(1), values.get(2),values.get(3),values.get(4),values.get(5),values.get(6),values.get(7), salt);
 
         String res = objectToString(callResult.get(0));
         JSONObject jObject = new JSONObject(res);
         String result = jObject.getString("value");
 
         return result;
-    }
-
-    private void test(Object... t){
-        List<Object> temp = Arrays.asList(t);
-        System.out.println(temp);
-        System.out.println(temp.get(2).toString());
     }
 }

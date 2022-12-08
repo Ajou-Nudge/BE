@@ -5,14 +5,11 @@ import com.vone.vone.config.security.TokenInfo;
 import com.vone.vone.data.dao.MemberDAO;
 import com.vone.vone.data.dto.UserInfoDto;
 import com.vone.vone.data.dto.UserJoinDto;
-import com.vone.vone.data.dto.UserLoginRequestDto;
+import com.vone.vone.data.dto.UserLoginDto;
 import com.vone.vone.data.entity.Member;
 import com.vone.vone.data.repository.UserRepository;
 import com.vone.vone.service.UserService;
-import jnr.a64asm.Mem;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.AlreadyBuiltException;
@@ -24,9 +21,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -47,13 +41,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public TokenInfo login(UserLoginRequestDto userLoginRequestDto) {
+    public TokenInfo login(UserLoginDto userLoginDto) {
 
         Member member = userRepository
-                .findByMemberId(userLoginRequestDto.getMemberId())
+                .findByMemberId(userLoginDto.getMemberId())
                 .orElseThrow(() -> new UsernameNotFoundException("아이디 혹은 비밀번호를 확인하세요."));
 
-        boolean matches = passwordEncoder.matches(userLoginRequestDto.getPassword(), member.getPassword());
+        boolean matches = passwordEncoder.matches(userLoginDto.getPassword(), member.getPassword());
         if (!matches) throw new BadCredentialsException("아이디 혹은 비밀번호를 확인하세요.");
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getMemberId(), member.getPassword());

@@ -12,6 +12,6 @@ import java.util.List;
 @ToString
 @Builder
 public class VC2ResponseDto {
-    private Long vcIds;
+    private Long vcId;
     private String hash;
 }

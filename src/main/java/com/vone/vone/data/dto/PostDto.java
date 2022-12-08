@@ -22,6 +22,6 @@ public class PostDto {
 
     private String url;
 
-    private String verifierId;
+    private String verifier;
 
 }

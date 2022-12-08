@@ -2,27 +2,21 @@ package com.vone.vone.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vone.vone.data.dto.*;
-import com.vone.vone.data.entity.VC;
 import com.vone.vone.service.PostService;
 import com.vone.vone.service.StorageService;
 import com.vone.vone.service.VCService;
 import com.vone.vone.service.impl.StorageFileNotFoundException;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/holder")
@@ -30,7 +24,6 @@ public class Holder {
     private final PostService postService;
     private final VCService vcService;
     private final StorageService storageService;
-
     private final ObjectMapper objectMapper;
     @Autowired
     public Holder (PostService postService, VCService vcService, StorageService storageService, ObjectMapper objectMapper) {

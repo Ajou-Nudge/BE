@@ -3,12 +3,10 @@ package com.vone.vone.controller;
 import com.vone.vone.config.security.TokenInfo;
 import com.vone.vone.data.dto.UserInfoDto;
 import com.vone.vone.data.dto.UserJoinDto;
-import com.vone.vone.data.dto.UserLoginRequestDto;
-import com.vone.vone.data.entity.Member;
+import com.vone.vone.data.dto.UserLoginDto;
 import com.vone.vone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +19,8 @@ public class User {
     private final UserService userService;
 
     @PostMapping("/login")
-    public TokenInfo login(@RequestBody UserLoginRequestDto userLoginRequestDto) {
-        TokenInfo tokenInfo = userService.login(userLoginRequestDto);
+    public TokenInfo login(@RequestBody UserLoginDto userLoginDto) {
+        TokenInfo tokenInfo = userService.login(userLoginDto);
         return tokenInfo;
     }
 

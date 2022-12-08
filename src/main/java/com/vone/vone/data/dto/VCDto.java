@@ -13,6 +13,7 @@ import java.util.Map;
 @ToString
 @Builder
 public class VCDto {
+    private Long vcId;
     private String context;
     private String issuer;
     private Map<String, String> credentialSubject;
