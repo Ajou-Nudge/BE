@@ -22,11 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Example code about "How to execute Smart Contract."
- * Related reference - Korean: https://ko.docs.klaytn.com/bapp/sdk/caver-java/getting-started#smart-contract
- * Related reference - English: https://docs.klaytn.com/bapp/sdk/caver-java/getting-started#smart-contract
- */
 @Service
 public class KlaytnServiceImpl implements KlaytnService {
     // You can directly input values for the variables below, or you can enter values in the caver-java-examples/.env file.
@@ -40,9 +35,12 @@ public class KlaytnServiceImpl implements KlaytnService {
     private String chainId = ""; // e.g. "1001" or "8217";
     @Value("${klaytn.contractaddress}")
     private String contractAddress = "";
-    private final VCDAO vcDAO;
+    @Value("${klaytn.hashaddress}")
+    private String hashAddress = "";
+
     @Value("${klaytn.salt}")
     private String salt = "";
+    private final VCDAO vcDAO;
 
     @Autowired
     public KlaytnServiceImpl(VCDAO vcDAO){
@@ -59,7 +57,7 @@ public class KlaytnServiceImpl implements KlaytnService {
         httpService.addHeader("Authorization", Credentials.basic(accessKeyId, secretAccessKey, StandardCharsets.UTF_8));
         httpService.addHeader("x-chain-id", chainId);
         Caver caver = new Caver(httpService);
-        // abi is extracted by compiling caver-java-examples/resources/KVstore.sol using solc(solidity compiler)
+
         String abi = "[\n" +
                 "{\n" +
                 "\t\t\"constant\": true,\n" +
@@ -95,8 +93,7 @@ public class KlaytnServiceImpl implements KlaytnService {
                 "\t\t\"type\": \"function\"\n" +
                 "\t}"+
                 "]";
-        // You can get contract address
-        // by running caver-java-examples/contract/deploy scenario.;
+
         Contract contract = caver.contract.create(abi, contractAddress);
         List<Type> callResult = contract.call("getVCById", didId,vcId); //"did:vone:01E5B053B7ba8A91Bdb8FedD5814296c41aD522E"
         String res = objectToString(callResult.get(0));
@@ -131,62 +128,30 @@ public class KlaytnServiceImpl implements KlaytnService {
         Caver caver = new Caver(httpService);
 
         String abi = "[\n" +
-                "{\n" +
-                "\t\t\"constant\": true,\n" +
+                "\t{\n" +
                 "\t\t\"inputs\": [\n" +
                 "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value1\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value2\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value3\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value4\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value5\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value6\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value7\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"_value8\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
-                "\t\t\t},\n" +
-                "\t\t\t{\n" +
-                "\t\t\t\t\"name\": \"salt\",\n" +
-                "\t\t\t\t\"type\": \"string\"\n" +
+                "\t\t\t\t\"internalType\": \"string[]\",\n" +
+                "\t\t\t\t\"name\": \"input\",\n" +
+                "\t\t\t\t\"type\": \"string[]\"\n" +
                 "\t\t\t}\n" +
                 "\t\t],\n" +
                 "\t\t\"name\": \"hash\",\n" +
                 "\t\t\"outputs\": [\n" +
                 "\t\t\t{\n" +
+                "\t\t\t\t\"internalType\": \"bytes32\",\n" +
                 "\t\t\t\t\"name\": \"\",\n" +
                 "\t\t\t\t\"type\": \"bytes32\"\n" +
                 "\t\t\t}\n" +
                 "\t\t],\n" +
-                "\t\t\"payable\": false,\n" +
-                "\t\t\"stateMutability\": \"view\",\n" +
+                "\t\t\"stateMutability\": \"pure\",\n" +
                 "\t\t\"type\": \"function\"\n" +
-                "\t}"+
+                "\t}\n" +
                 "]";
 
-        Contract contract = caver.contract.create(abi, contractAddress);
+        Contract contract = caver.contract.create(abi, hashAddress);
 
-        List<Type> callResult = contract.call("hash",values.get(0), values.get(1), values.get(2),values.get(3),values.get(4),values.get(5),values.get(6),values.get(7), salt);
+        List<Type> callResult = contract.call("hash", values);
 
         String res = objectToString(callResult.get(0));
         JSONObject jObject = new JSONObject(res);

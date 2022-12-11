@@ -73,7 +73,7 @@ public class Issuer {
 
     @PostMapping("/hash")
     public ResponseEntity<String> getHash(@RequestBody List<String> credentialSubject) throws Exception {
-        String res = klaytnService.hash(credentialSubject);
-        return ResponseEntity.status(HttpStatus.OK).body(res);
+        String hash = klaytnService.hash(credentialSubject);
+        return ResponseEntity.status(HttpStatus.OK).body(hash);
     }
 }

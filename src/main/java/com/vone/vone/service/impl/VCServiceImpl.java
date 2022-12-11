@@ -46,7 +46,9 @@ public class VCServiceImpl implements VCService {
     @Override
     public String getFileNameById(Long id) throws JSONException {
         VC vc = vcDAO.selectVC(id);
-        return vc.getCredentialSubject().get(7);
+        String index = Integer.toString(vc.getCredentialSubject().size());
+        System.out.println(index);
+        return vc.getCredentialSubject().get(index);
     }
 
     @Override
@@ -78,11 +80,11 @@ public class VCServiceImpl implements VCService {
         holdersVCDAO.insertHoldersVC(holdersVC);
 
         List<String> csList = new ArrayList<>(credentialSubject.values());
-        String res = klaytnService.hash(csList);
+        String hash = klaytnService.hash(csList);
 
         VC2ResponseDto vc2ResponseDto = new VC2ResponseDto();
         vc2ResponseDto.setVcId(vc.getId());
-        vc2ResponseDto.setHash(res);
+        vc2ResponseDto.setHash(hash);
         return vc2ResponseDto;
     }
     @Override
@@ -131,7 +133,6 @@ public class VCServiceImpl implements VCService {
     }
 
     private VCDto VCToVCDto(VC vc){
-        System.out.println(vc);
         VCDto result = new VCDto();
         result.setContext(vc.getContext());
         result.setIssuer(vc.getIssuer());
