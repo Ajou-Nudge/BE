@@ -80,6 +80,7 @@ public class VCServiceImpl implements VCService {
         holdersVCDAO.insertHoldersVC(holdersVC);
 
         List<String> csList = new ArrayList<>(credentialSubject.values());
+        System.out.println();
         String hash = klaytnService.hash(csList);
 
         VC2ResponseDto vc2ResponseDto = new VC2ResponseDto();
@@ -137,17 +138,20 @@ public class VCServiceImpl implements VCService {
         result.setContext(vc.getContext());
         result.setIssuer(vc.getIssuer());
         result.setCredentialSubject(vc.getCredentialSubject());
-        result.setVcId(vc.getId());
         return result;
     }
 
     @Override
-    public List<VCDto> getVCByHolderId(String holderId) throws JSONException {
+    public List<VC2HolderDto> getVCByHolderId(String holderId) throws JSONException {
         List<HoldersVC> vcs = holdersVCDAO.getHoldersVCByHolderId(holderId);
-        List<VCDto> vcResponses = new ArrayList<>();
+        List<VC2HolderDto> vcResponses = new ArrayList<>();
         for(HoldersVC vc : vcs){
             VC tempVc = vcDAO.selectVC(vc.getVcId());
-            VCDto vcResponse = VCToVCDto(tempVc);
+            VC2HolderDto vcResponse = new VC2HolderDto();
+            vcResponse.setContext(tempVc.getContext());
+            vcResponse.setIssuer(tempVc.getIssuer());
+            vcResponse.setVcId(tempVc.getId());
+            vcResponse.setCredentialSubject(tempVc.getCredentialSubject());
             vcResponses.add(vcResponse);
         }
         return vcResponses;

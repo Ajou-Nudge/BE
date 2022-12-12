@@ -2,7 +2,6 @@ package com.vone.vone.data.dto;
 
 import lombok.*;
 
-import java.util.List;
 import java.util.Map;
 
 @Data
@@ -12,7 +11,8 @@ import java.util.Map;
 @AllArgsConstructor
 @ToString
 @Builder
-public class VCDto {
+public class VC2HolderDto {
+    private Long vcId;
     private String context;
     private String issuer;
     private Map<String, String> credentialSubject;

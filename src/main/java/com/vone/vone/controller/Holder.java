@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/holder")
-public class Holder {
+public class Holder{
     private final PostService postService;
     private final VCService vcService;
     private final StorageService storageService;
@@ -41,8 +41,8 @@ public class Holder {
 
     @ApiOperation(value = "보유 인증서 목록", notes = "Holder가 보유중인 vc 리스트를 반환합니다.")
     @GetMapping("/vc-list/{holderId}")
-    public ResponseEntity<List<VCDto>> getVCList(@PathVariable String holderId) throws JSONException {
-        List<VCDto> vcDtos = vcService.getVCByHolderId(holderId);
+    public ResponseEntity<List<VC2HolderDto>> getVCList(@PathVariable String holderId) throws JSONException {
+        List<VC2HolderDto> vcDtos = vcService.getVCByHolderId(holderId);
         return ResponseEntity.status(HttpStatus.OK).body(vcDtos);
     }
 
@@ -63,8 +63,7 @@ public class Holder {
     @ApiOperation(value = "인증서 셀프 등록", notes = "인증서를 등록합니다.")
     @PostMapping("/vc")
     public ResponseEntity<Long> handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("data") String data) throws Exception{
-        VC2IssueDto vcForSelfIssueDto = null;
-        vcForSelfIssueDto = objectMapper.readValue(data,VC2IssueDto.class);
+        VC2IssueDto vcForSelfIssueDto = objectMapper.readValue(data,VC2IssueDto.class);
         System.out.println(vcForSelfIssueDto);
         Long res = storageService.store(file, vcForSelfIssueDto);
         return ResponseEntity.status(HttpStatus.OK).body(res);

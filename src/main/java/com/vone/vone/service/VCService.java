@@ -13,7 +13,7 @@ public interface VCService {
 
     List<String> getVCsContextByIssuerId(String issuerId);
 
-    List<VCDto> getVCByHolderId(String holderId) throws JSONException;
+    List<VC2HolderDto> getVCByHolderId(String holderId) throws JSONException;
     Long listVC(VC2IssueDto vc2IssueDto) throws Exception;
     boolean submitVC(VC2VerifyDto vc2VerifyDto) throws JSONException;
 
