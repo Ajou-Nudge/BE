@@ -1,7 +1,5 @@
 package com.vone.vone.data.entity;
 
-import lombok.Builder;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,7 +11,6 @@ public class Context {
     @Id
     private String context;
     @ElementCollection
-    @Builder.Default()
     private List<String> credentialSubject = new ArrayList<>();
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

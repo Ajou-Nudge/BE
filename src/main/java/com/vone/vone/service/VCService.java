@@ -7,9 +7,10 @@ import com.vone.vone.data.entity.HoldersVC;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface VCService {
-    VC2ResponseDto issueVC(VC2IssueDto vc2IssueDto) throws Exception;
+    Map<Long, String> issueVC(VC2IssueDto vc2IssueDto) throws Exception;
 
     List<String> getVCsContextByIssuerId(String issuerId);
 

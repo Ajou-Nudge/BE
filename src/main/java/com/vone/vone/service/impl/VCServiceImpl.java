@@ -12,13 +12,11 @@ import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.VCService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class VCServiceImpl implements VCService {
@@ -52,7 +50,7 @@ public class VCServiceImpl implements VCService {
     }
 
     @Override
-    public VC2ResponseDto issueVC(VC2IssueDto vc2IssueDto) throws Exception{
+    public Map<Long, String> issueVC(VC2IssueDto vc2IssueDto) throws Exception{
         VC vc = new VC();
         vc.setContext(vc2IssueDto.getVc().getContext());
         vc.setIssuer(vc2IssueDto.getVc().getIssuer());
@@ -80,13 +78,11 @@ public class VCServiceImpl implements VCService {
         holdersVCDAO.insertHoldersVC(holdersVC);
 
         List<String> csList = new ArrayList<>(credentialSubject.values());
-        System.out.println();
         String hash = klaytnService.hash(csList);
 
-        VC2ResponseDto vc2ResponseDto = new VC2ResponseDto();
-        vc2ResponseDto.setVcId(vc.getId());
-        vc2ResponseDto.setHash(hash);
-        return vc2ResponseDto;
+        Map<Long, String> result = new HashMap<>();
+        result.put(savedVC.getId(), hash);
+        return result;
     }
     @Override
     public Long listVC(VC2IssueDto vc2IssueDto) {

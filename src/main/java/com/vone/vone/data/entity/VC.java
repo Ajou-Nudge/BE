@@ -20,7 +20,6 @@ public class VC {
     private String issuer;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
     private Map<String, String> credentialSubject;
 
     private LocalDateTime createdAt;

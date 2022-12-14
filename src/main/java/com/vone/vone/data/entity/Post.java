@@ -18,7 +18,6 @@ public class Post {
     @Column(nullable = false)
     private String expired;
     @ElementCollection
-    @Builder.Default
     private List<String> required = new ArrayList<>();
     @Column(nullable = false)
     private String url;

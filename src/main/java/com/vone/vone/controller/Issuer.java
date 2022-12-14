@@ -1,19 +1,23 @@
 package com.vone.vone.controller;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vone.vone.data.dto.*;
 import com.vone.vone.service.ContextService;
 import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.VCService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/issuer")
@@ -40,13 +44,14 @@ public class Issuer {
 
     @Operation(summary = "VC 발행", description = "새로운 vc를 발행합니다.")
     @PostMapping("/vc")
-    public ResponseEntity<List<VC2ResponseDto>> issueVC(@RequestBody ArrayList<VC2IssueDto> vcs) throws Exception {
-        List<VC2ResponseDto> vc2ResponseDtos = new ArrayList<>();
-        for(VC2IssueDto vc : vcs){
-            VC2ResponseDto hash = vcService.issueVC(vc);
-            vc2ResponseDtos.add(hash);
+    public ResponseEntity<Map<Long, String>> issueVC(@RequestBody List<VC2IssueDto> vcs) throws Exception {
+        Map<Long, String> result = new TreeMap<>();
+
+        for(VC2IssueDto vc : vcs) {
+            Map<Long, String> set = vcService.issueVC(vc);
+            result.putAll(set);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(vc2ResponseDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary = "Context 목록", description = "현재 존재하는 모든 Context 목록을 출력합니다.")

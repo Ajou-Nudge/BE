@@ -17,7 +17,6 @@ public class SubmittedVC {
     @Column(nullable = false)
     private Long postId;
     @ElementCollection
-    @Builder.Default
     private List<Long> vcIds = new ArrayList<>();
     @Column(nullable = false)
     private String holderId;
