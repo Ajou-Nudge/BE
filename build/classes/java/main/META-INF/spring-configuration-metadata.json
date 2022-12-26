@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "name": "storage",
+      "type": "com.vone.vone.service.impl.StorageProperties",
+      "sourceType": "com.vone.vone.service.impl.StorageProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "storage.location",
+      "type": "java.lang.String",
+      "description": "Folder location for storing files",
+      "sourceType": "com.vone.vone.service.impl.StorageProperties",
+      "defaultValue": "upload-dir"
+    }
+  ],
+  "hints": []
+}
