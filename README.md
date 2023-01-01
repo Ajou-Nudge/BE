@@ -1,19 +1,3 @@
-# 조성연 작업 목록
-1. [x] test/FlowChartTest.java 테스트 다 통과하게 만들기.
-   1. Test 3, Test 4는 그냥 더미데이터 반환해서 통과하는 거니까 다시 짜야함.
-   2. Test 12는 블록체인 연동해서 Suceess, Failed 중 하나 반환해야하므로 일단 패스. 그냥 status를 Pending에서 Success로 바꾸는 걸로 하면 될 듯
-2. [x] 로그인/회원가입 구현
-3. [ ] 로그인/회원가입 구현 후에는 미들웨어 만들어서 verifier, issuer, holder 권한별로 정해진 api만 호출할 수 있도록 하기
-3. [ ] 예외처리해야할 것 굉장히 많음. 플로우차트 잘 보고 생각해서 추가하기.
-   1. 예외처리 예시 ) vcId가 2인 vc가 존재하지 않는데 vcId가 2인 인증서를 제출하려하는 경우
-   2. postId가 2인 Post(채용공고)가 존재하지 않는데 postId가 2인 Post에 인증서를 제출하려 하는 경우
-   3. context를 생성하는데 해당 이름의 context가 이미 존재하는 경우
-   4. _**위 경우 외에 다른 예외케이스 찾아서 상황에 적합한 error code와 메시지 반환 (404, 500 400 등등)**_
-4. [ ] 코드 굉장히 더러움. refactoring 필히 요함. 더럽게 짜서 ㅈㅅ
-5. [ ] 다 하고 나면 오브젝트 스토리지 + 트래픽 처리 생각하기
-
-**README의 RestAPI 표랑 코드랑 조금 다를 수 있음. 코드 우선**
-
 # DB SCHEMA
 
 ![](/doc/img/DB-Schema.png)
