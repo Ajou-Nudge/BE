@@ -25,10 +25,10 @@ public class User {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<UserJoinDto> join(@RequestBody UserJoinDto userJoinDto) {
+    public ResponseEntity<String> join(@RequestBody UserJoinDto userJoinDto) {
         userService.join(userJoinDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(userJoinDto);
+        return ResponseEntity.status(HttpStatus.OK).body(userJoinDto.getRole());
     }
 
     @GetMapping("/info")

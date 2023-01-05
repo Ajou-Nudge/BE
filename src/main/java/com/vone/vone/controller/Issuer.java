@@ -1,20 +1,15 @@
 package com.vone.vone.controller;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vone.vone.data.dto.*;
 import com.vone.vone.service.ContextService;
 import com.vone.vone.service.KlaytnService;
 import com.vone.vone.service.VCService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;

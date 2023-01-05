@@ -29,7 +29,7 @@ public class Holder{
     public Holder (PostService postService, VCService vcService, StorageService storageService, ObjectMapper objectMapper) {
         this.postService = postService;
         this.vcService = vcService;
-        this.storageService=storageService;
+        this.storageService = storageService;
         this.objectMapper = objectMapper;
     }
     @ApiOperation(value = "채용 공고 목록", notes = "Verifier가 등록한 채용공고 목록을 확인합니다.")
@@ -63,11 +63,12 @@ public class Holder{
     @ApiOperation(value = "인증서 셀프 등록", notes = "인증서를 등록합니다.")
     @PostMapping("/vc")
     public ResponseEntity<Long> handleFileUpload(@RequestParam("file") MultipartFile file, @RequestParam("data") String data) throws Exception{
-        VC2IssueDto vcForSelfIssueDto = objectMapper.readValue(data,VC2IssueDto.class);
-        System.out.println(vcForSelfIssueDto);
-        Long res = storageService.store(file, vcForSelfIssueDto);
+        VC2IssueDto VC2SelfIssueDto = objectMapper.readValue(data,VC2IssueDto.class);
+        System.out.println(VC2SelfIssueDto);
+        Long res = storageService.store(file, VC2SelfIssueDto);
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
+
     @ApiOperation(value = "셀프등록한 인증서 다운", notes = "구현예정")
     @GetMapping("/file/{id}")
     @ResponseBody

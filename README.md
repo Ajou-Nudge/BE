@@ -4,143 +4,146 @@
 
 # REST API
 
-| Method | URI                                        | Description                     |
-| ------ |--------------------------------------------| ------------------------------- |
-| POST   | /issuer/create                             | VC Context 생성                 |
-| POST   | /issuer/issue                              | VC 발행                         |
-| GET    | /issuer/context-list/:issuerId    *        | Issuer가 생성한 Context 목록    |
-| GET    | /context-list                              | context 목록                    |
-| GET    | /issuer/vc-list/:context     *             | 해당 context에 해당하는 VC 목록 |
-| POST   | /holder/submit                             | 해당 vc와 내용을 제출           |
-| GET    | /holder/vc-list/:holderId                  | Holder가 가지고 있는 VC 목록    |
-| GET    | /holder/submit-list/:holderId              | 제출한 vc 목록                  |
-| GET    | /holder/posting-list                       | 채용 공고 목록                  |
-| POST   | /verifier/post                             | 채용공고 등록                   |
-| GET    | /verifier/postList/:verifierId             | 내 채용공고 목록                |
-| GET    | /verifier/submit-list//:verifierId/:postId | 해당 공고에서 제출받은 vc 목록  |
-| POST   | /verifier/verify                           | 인증서 검증                     |
+| Method | URI                                               | Description    |
+|--------|---------------------------------------------------|----------------|
+| POST   | /issuer/context                                   | Context 생성     |
+| POST   | /issuer/vc                                        | VC 발행          |
+| POST   | /issuer/hash                                      | Hash 값 불러오기    |
+| GET    | /issuer/context-list                              | Context 목록     |
+| GET    | /issuer/context-list/{issuerId}                   | 발행한 VC의 Context 목록 |
+| GET    | /issuer/vc-list                                   | 발행한 VC 목록      |
+| GET    | /holder/vc-list/{holderId}                        | Holder가 보유한 VC 목록 |
+| GET    | /holder/submitted-vc-list/{holderId}              | 제출한 VC 목록      |
+| GET    | /holder/post-list                                 | 채용공고 목록        |
+| GET    | /holder/file/{id}                                 | 셀프등록한 인증서 다운로드 |
+| POST   | /holder/vc-list/{hodlerId}                        | 인증서 셀프등록       |
+| POST   | /holder/submitted-vc                              | 인증서 제출         |
+| POST   | /verifier/verify                                  | 인증서 검증         |
+| POST   | /verifier/post                                    | 채용공고 등록        |
+| GET    | /verifier/post-list/{verifierId}                  | 채용공고 목록        |
+| GET    | /verifier/submitted-vc-list/{verifierId}/{postId} | 받은 인증서 목록      |
+| POST   | /user/info                                        | 유저 정보 불러오기     |
+| GET    | /user/join                                        | 회원가입           |
+| GET    | /user/login                                       | 로그인            |
 
-# Issuer URI
+# Issuer
 
 ## Context 생성
 
 ### URI
 
 ```
-/issuer/create
+/issuer/context
 ```
 
 ### req.body
-
-context는 입력값
-"1"은 필수값
-
 ```json
 {
-  "context": "graduate-certificate",
-  "credentialSubject": {
-    "title": "1",
-    "name": "1",
-    "date": "1",
-    "major": "1",
-    "doubleMajor": "0",
-    "minor": "0"
-  }
+  "context": "contextName",
+  "credentialSubject": [
+    "credentialSubject1", 
+    "credentialSubject2", 
+    "credentialSubject3"
+  ]
 }
 ```
 
 ### res.body
-
 ```json
-{ "id": "00010001" }
+{
+  "context": "contextName",
+  "credentialSubject": [
+    "credentialSubject1",
+    "credentialSubject2",
+    "credentialSubject3"
+  ]
+}
 ```
 
-## Context 목록 확인
+## VC 발행
 
 ### URI
 
 ```
-/context-list
+/issuer/vc
 ```
 
-### res.body
-
+### req.body
 ```json
 [
   {
-    "context": "graduate-certificate",
-    "credentialSubject": {
-      "title": "1",
-      "name": "1",
-      "date": "1",
-      "major": "1",
-      "doubleMajor": "0",
-      "minor": "0"
+    "holder": "holderId",
+    "vc": {
+      "context": "contextName",
+      "credentialSubject": {
+        "0": "value1",
+        "1": "value2",
+        "2": "value3"
+      },
+      "issuer": "issuerId"
+    }
+  },
+  {
+    "holder": "holderId",
+    "vc": {
+      "context": "contextName2",
+      "credentialSubject": {
+        "0": "value1",
+        "1": "value2",
+        "2": "value3",
+        "3": "value4",
+        "4": "value5"
+      },
+      "issuer": "issuerId"
     }
   }
 ]
 ```
 
-## VC발행
+### res.body
+"id" : {hash}
+```json
+{
+  "7": "0AYjgQb/0YM0M0qXegr0ps3JDzq3Uu1UMcTIUvXQx3I=",
+  "8": "0AYjgQb/0YM0M0qXegr0ps3JDzq3Uu1UMcTIUvXQx3I="
+}
+```
+
+## Hash 값 불러오기
 
 ### URI
 
 ```
-/issuer/issue
+/issuer/hash
 ```
 
 ### req.body
 
 ```json
 [
-  {
-    "holderId": "1",
-    "vc": {
-      "context": "graduate-certificate",
-      "issuer": "0001",
-      "credentialSubject": {
-        "title": "아주대학교 졸업증명서",
-        "name": "오동재",
-        "date": "2022-02-10",
-        "major": "소프트웨어학",
-        "doubleMajor": "",
-        "minor": ""
-      }
-    }
-  },
-  {
-    "holderId": "2",
-    "vc": {
-      "context": "graduate-certificate",
-      "issuer": "0001",
-      "credentialSubject": {
-        "title": "아주대학교 졸업증명서",
-        "name": "서종현",
-        "date": "2022-02-10",
-        "major": "응화생",
-        "doubleMajor": "",
-        "minor": ""
-      }
-    }
-  }
+  "value1",
+  "value2",
+  "value3",
+  "value4",
+  "value5",
+  "value6",
+  "value7",
+  "value8"
 ]
 ```
 
 ### res.body
 
 ```json
-[
-  { "holderId": "1", "vcId": "000100010001" },
-  { "holderId": "2", "vcId": "000100010002" }
-]
+89IWC4Jge57QNOD4aKs5PkZrg7mdV2FyBNl7gsuH5uM=
 ```
 
-## 이슈어가 발행한 context 목록 확인
+## Context 목록
 
 ### URI
 
 ```
-/issuer/context-list/:issuerId
+/issuer/context-list
 ```
 
 ### res.body
@@ -148,18 +151,32 @@ context는 입력값
 ```json
 [
   {
-    "context": "graduate-certificate",
-    "num": "2"
+    "context": "contextName",
+    "credentialSubject": [
+      "credentialSubject1",
+      "credentialSubject2",
+      "credentialSubject3"
+    ]
+  },
+  {
+    "context": "contextName2",
+    "credentialSubject": [
+      "credentialSubject1",
+      "credentialSubject2",
+      "credentialSubject3",
+      "credentialSubject4",
+      "credentialSubject5"
+    ]
   }
 ]
 ```
 
-## 해당 context에 해당하는 vc 목록 확인
+## 발행한 VC의 Context 목록
 
 ### URI
 
 ```
-/issuer/vc-list/:context
+/issuer/context-list/{issuerId}
 ```
 
 ### res.body
@@ -167,46 +184,34 @@ context는 입력값
 ```json
 [
   {
-    "holderId": "1",
-    "vc": {
-      "context": "graduate-certificate",
-      "issuer": "0001",
-      "credentialSubject": {
-        "title": "아주대학교 졸업증명서",
-        "name": "오동재",
-        "date": "2022-02-10",
-        "major": "소프트웨어학",
-        "doubleMajor": "",
-        "minor": ""
-      }
-    }
+    "context": "contextName",
+    "credentialSubject": [
+      "credentialSubject1",
+      "credentialSubject2",
+      "credentialSubject3"
+    ]
   },
   {
-    "holderId": "2",
-    "vc": {
-      "context": "graduate-certificate",
-      "issuer": "0001",
-      "credentialSubject": {
-        "title": "아주대학교 졸업증명서",
-        "name": "서종현",
-        "date": "2022-02-10",
-        "major": "응화생",
-        "doubleMajor": "",
-        "minor": ""
-      }
-    }
+    "context": "contextName2",
+    "credentialSubject": [
+      "credentialSubject1",
+      "credentialSubject2",
+      "credentialSubject3",
+      "credentialSubject4",
+      "credentialSubject5"
+    ]
   }
 ]
 ```
 
 # Holder
 
-## 채용 공고 목록
+## Holder가 보유한 VC 목록
 
 ### URI
 
 ```
-/holder/posting-list
+/holder/vc-list/{holderId}
 ```
 
 ### res.body
@@ -214,67 +219,28 @@ context는 입력값
 ```json
 [
   {
-    "postId": "0001",
-    "name": "대학원생 모집",
-    "verifier": "ajou-graduate-school",
-    "requirement": ["graduate-certificate"],
-    "expired": "2022-11-21",
-    "url": "https://~~"
-  }
-]
-```
-
-## 가지고 있는 VC 목록
-
-### URI
-
-```
- /holder/vc-list/:holderId
-```
-
-### res.body
-
-```json
-[
-  {
-    "context": "graduate-certificate",
-    "issuer": "0001",
+    "vcId": 1,
+    "context": "contextName",
+    "issuer": "issuerId",
     "credentialSubject": {
-      "title": "아주대학교 졸업증명서",
-      "name": "오동재",
-      "date": "2022-02-10",
-      "major": "소프트웨어학",
-      "doubleMajor": "",
-      "minor": ""
+      "credentialSubject1": "value1",
+      "credentialSubject2": "value2",
+      "credentialSubject3": "value3"
+    }
+  },
+  {
+    "vcId": 2,
+    "context": "contextName2",
+    "issuer": "issuerId",
+    "credentialSubject": {
+      "credentialSubject1": "value1",
+      "credentialSubject2": "value2",
+      "credentialSubject3": "value3",
+      "credentialSubject4": "value2",
+      "credentialSubject5": "value3"
     }
   }
 ]
-```
-
-## 해당 vc와 내용을 제출
-
-### URI
-
-```
-/holder/submit
-```
-
-### req.body
-
-```json
-{
-  "postId":"0001",
-  "vcIds": 
-  [
-    "asdasd","asdsfa12"
-  ]
-}
-```
-
-### res.body
-
-```json
-{ "status": "200" }
 ```
 
 ## 제출한 VC 목록
@@ -282,7 +248,7 @@ context는 입력값
 ### URI
 
 ```
-/holder/submit-list/:holderId
+/holder/submitted-vc-list/{holderId} 
 ```
 
 ### res.body
@@ -290,17 +256,156 @@ context는 입력값
 ```json
 [
   {
-    "vcId": "",
-    "postId": "",
-    "verifier": "ajou-graduate-school",
-    "title": "아주대학교 졸업증명서",
-    "date": "2022-10-10",
+    "vcIds": [
+      1
+    ],
+    "postId": 1,
+    "verifier": "verifierId",
+    "title": "채용공고",
+    "date": "2023-01-06T00:20:56.067053",
+    "status": "pending"
+  },
+  {
+    "vcIds": [
+      2
+    ],
+    "postId": 1,
+    "verifier": "verifierId",
+    "title": "채용공고",
+    "date": "2023-01-06T00:20:56.082938",
     "status": "pending"
   }
 ]
 ```
 
+## 채용공고 목록
+
+### URI
+
+```
+/holder/post-list
+```
+
+### res.body
+
+```json
+[
+  {
+    "id": 1,
+    "title": "채용공고",
+    "expired": "2023-01-06",
+    "required": [
+      "testContext",
+      "testContext2"
+    ],
+    "url": "http://vone.kr",
+    "verifierId": "verifierId"
+  },
+  {
+    "id": 2,
+    "title": "채용공고2",
+    "expired": "2023-01-10",
+    "required": [
+      "testContext",
+      "testContext2"
+    ],
+    "url": "http://vone.kr",
+    "verifierId": "verifierId"
+  }
+]
+```
+
+## 셀프등록한 인증서 다운로드
+
+### URI
+
+```
+/holder/file/{id}
+```
+
+### res.body
+
+```json
+
+```
+
+## 인증서 셀프등록
+
+### URI
+
+```
+/holder/vc-list/{hodlerId}
+```
+
+### req.body
+
+```json
+
+```
+
+### res.body
+
+```json
+
+```
+
+## 인증서 제출
+
+### URI
+
+```
+/holder/submitted-vc
+```
+
+### req.body
+
+```json
+{
+  "holder": "holderId",
+  "postId": 1,
+  "vcIds": [
+    1, 
+    2
+  ]
+}
+```
+
+### res.body
+
+```json
+success
+```
+
 # Verifier
+
+## 인증서 검증
+
+### URI
+
+```
+/verifier/verify
+```
+
+### req.body
+
+```json
+{
+  "holder": "hodlerId",
+  "postId": 1,
+  "vcIds": [
+    9, 10
+  ]
+}
+```
+
+### res.body
+
+```json
+[
+  "true",
+  "true"
+]
+```
 
 ## 채용공고 등록
 
@@ -314,26 +419,40 @@ context는 입력값
 
 ```json
 {
-  "verifierId": "01",
-  "name": "대학원생 모집",
-  "expired": "2022-11-21",
-  "required": ["graduate-certificate"],
-  "url": "https://~~"
+  "expired": "2023-01-06",
+  "required": [
+    "testContext",
+    "testContext2"
+  ],
+  "title": "채용공고",
+  "url": "http://vone.kr",
+  "verifier": "verifierId"
 }
 ```
 
 ### res.body
 
 ```json
-{ "status": "200" }
+{
+  "id": 1,
+  "title": "채용공고",
+  "expired": "2023-01-06",
+  "required": [
+    "testContext",
+    "testContext2"
+  ],
+  "url": "http://vone.kr",
+  "verifierId": "verifierId"
+}
 ```
 
-## 내 채용 공고 목록
+
+## 채용공고 목록
 
 ### URI
 
 ```
-/verifier/postList/:verifierId
+/verifier/post-list/{verifierId}
 ```
 
 ### res.body
@@ -341,46 +460,36 @@ context는 입력값
 ```json
 [
   {
-    "postId": "0001",
-    "name": "아주대학교 대학원생 모집",
-    "people": "2"
-  }
-]
-```
-
-## 제출 받은 VC 목록
-
-### URI
-
-```
-/verifier/submit-list//:verifierId/:postId
-```
-
-### res.body
-
-```json
-[
+    "id": 1,
+    "title": "채용공고",
+    "expired": "2023-01-06",
+    "required": [
+      "testContext",
+      "testContext2"
+    ],
+    "url": "http://vone.kr",
+    "verifierId": "verifierId"
+  },
   {
-    "context": "graduate-certificate",
-    "issuer": "0001",
-    "credentialSubject": {
-      "title": "아주대학교 졸업증명서",
-      "name": "오동재",
-      "date": "2022-02-10",
-      "major": "소프트웨어학",
-      "doubleMajor": "",
-      "minor": ""
-    }
+    "id": 2,
+    "title": "채용공고2",
+    "expired": "2023-01-10",
+    "required": [
+      "testContext",
+      "testContext2"
+    ],
+    "url": "http://vone.kr",
+    "verifierId": "verifierId"
   }
 ]
 ```
 
-## 검증
+## 받은 인증서 목록
 
 ### URI
 
 ```
-/verifier/verify
+/verifier/submitted-vc-list/{verifierId}/{postId}
 ```
 
 ### req.body
@@ -403,5 +512,97 @@ context는 입력값
 ### res.body
 
 ```json
-{ "status": "200" }
+[
+  {
+    "vcIds": [
+      1
+    ],
+    "postId": 1,
+    "verifier": "verifierId",
+    "title": "채용공고",
+    "date": "2023-01-06T00:20:31.335501",
+    "status": "pending"
+  },
+  {
+    "vcIds": [
+      2
+    ],
+    "postId": 1,
+    "verifier": "verifierId",
+    "title": "채용공고",
+    "date": "2023-01-06T00:20:31.346584",
+    "status": "pending"
+  }
+]
+```
+
+# User
+
+## 유저 정보 불러오기
+
+### URI
+
+```
+/user/info
+```
+
+### res.body
+
+```json
+{
+  "memberId": "holderId",
+  "memberRole": "HOLDER"
+}
+```
+
+## 회원가입
+
+### URI
+
+```
+/user/join
+```
+
+### req.body
+
+```json
+{
+  "memberId": "holderId",
+  "password": "holderPw",
+  "role": "HOLDER"
+}
+```
+
+### res.body
+
+```json
+HOLDER
+```
+
+## 로그인
+
+### URI
+
+```
+/user/login
+```
+
+### req.body
+
+```json
+{
+  "memberId": "holderId",
+  "password": "holderPw",
+  "role": "HOLDER"
+}
+```
+
+### res.body
+
+```json
+{
+  "grantType": "Bearer",
+  "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJob2xkZXJJZCIsImF1dGgiOiJST0xFX0hPTERFUiIsImV4cCI6MTY3MzAyMjY2OH0.Ko8uxXZZTOS8W4e-DkvEIYvG5XcRzub7JBv1MEodLM8",
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzMwMjI2Njh9.gkNqc6eUXpePsHLdYvfy-9UUtSG2YI7WZjjfsLvdqPw"
+}
 ```

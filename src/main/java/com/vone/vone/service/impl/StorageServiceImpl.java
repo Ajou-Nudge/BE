@@ -47,7 +47,6 @@ public class StorageServiceImpl implements StorageService {
 					Paths.get(fileName))
 					.normalize().toAbsolutePath();
 			if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-				// This is a security check
 				throw new StorageException(
 						"Cannot store file outside current directory.");
 			}

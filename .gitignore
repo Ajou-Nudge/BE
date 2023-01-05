@@ -5,6 +5,7 @@ HELP.md
 !**/src/test/**/build/
 .env
 application.properties
+/build
 
 ### STS ###
 .apt_generated
