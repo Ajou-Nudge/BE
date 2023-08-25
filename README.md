@@ -1,8 +1,6 @@
-# DB SCHEMA
+# Vone_BE
 
-![](/doc/img/DB-Schema.png)
-
-# REST API
+## API Docs
 
 | Method | URI                                               | Description    |
 |--------|---------------------------------------------------|----------------|
